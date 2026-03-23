@@ -1,0 +1,6 @@
+@ChallengMe.API_HostAddress = http://localhost:5241
+
+GET {{ChallengMe.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

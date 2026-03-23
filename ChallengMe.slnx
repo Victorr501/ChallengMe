@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="ChallengMe.API/ChallengMe.API.csproj" />
+  <Project Path="ChallengMe.AzureAD/ChallengMe.AzureAD.csproj" />
+  <Project Path="ChallengMe.Functions/ChallengMe.Functions.csproj" />
+  <Project Path="ChallengMe.GeminiServices/ChallengMe.GeminiServices.csproj" />
+  <Project Path="ChallengMe.Models/ChallengMe.Models.csproj" />
+  <Project Path="ChallengMe.Repositories/ChallengMe.Repositories.csproj" />
+  <Project Path="ChallengMe.Services/ChallengMe.Services.csproj" />
+  <Project Path="ChallengMe.Web/ChallengMe.Web.csproj" />
+</Solution>
