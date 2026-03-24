@@ -1,0 +1,39 @@
+﻿@inherits LayoutComponentBase
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChallengMe!</title>
+    <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+
+    <nav class="pub-navbar">
+
+        <a href="/" class="pub-navbar__brand">
+            Challenge<span>Me!</span>
+        </a>
+
+        <div class="pub-navbar__actions">
+            <a href="/login" class="pub-nav-link">
+                Iniciar sesión
+            </a>
+            <a href="/registro" class="btn btn-primary btn-sm">
+                Registrarse
+            </a>
+        </div>
+
+    </nav>
+
+    <main class="pub-content">
+        @Body
+    </main>
+
+    <footer class="pub-footer">
+        © @DateTime.Now.Year ChallengMe! · Todos los derechos reservados
+    </footer>
+
+</body>
+</html>

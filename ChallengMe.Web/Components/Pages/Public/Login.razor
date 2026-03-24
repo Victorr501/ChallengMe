@@ -1,0 +1,174 @@
+﻿@page "/login"
+@layout PublicLayout
+
+<div class="auth-container">
+    <div class="auth-card animate-scaleIn">
+
+        <!-- Logo -->
+        <div class="auth-logo">
+            Challenge<span>Me!</span>
+        </div>
+
+        <!-- Título -->
+        <h1 class="h2" style="text-align:center; margin-bottom: var(--space-xs);">
+            Bienvenido de nuevo
+        </h1>
+        <p class="text-sm text-muted" style="text-align:center; margin-bottom: var(--space-xl);">
+            Inicia sesión para ver tu reto del día
+        </p>
+
+        <!-- ── BOTÓN AZURE AD ─────────────────────────── -->
+        <button class="btn-microsoft" @onclick="LoginConMicrosoft">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 21 21">
+                <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+                <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+                <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+                <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+            </svg>
+            Continuar con Microsoft
+        </button>
+
+        <!-- ── DIVISOR ─────────────────────────────────── -->
+        <div class="auth-divider">o inicia sesión con email</div>
+
+        <!-- ── ALERTA DE ERROR ───────────────────────── -->
+        @if (resultado.TieneError)
+        {
+            <div class="alert alert-error animate-fadeIn">
+                <span>⚠</span>
+                <span>@resultado.Error</span>
+            </div>
+        }
+
+        <!-- ── FORMULARIO ────────────────────────────── -->
+        <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input class="form-input @(errores.ContainsKey("email") ? "input-error" : "")"
+                   id="email"
+                   type="email"
+                   placeholder="tu@email.com"
+                   @bind="modelo.Email"
+                   @bind:event="oninput" />
+            @if (errores.ContainsKey("email"))
+            {
+                <span class="form-error">@errores["email"]</span>
+            }
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="password">Contraseña</label>
+            <div class="input-password-wrap">
+                <input class="form-input @(errores.ContainsKey("password") ? "input-error" : "")"
+                       id="password"
+                       type="@(mostrarPassword ? "text" : "password")"
+                       placeholder="Tu contraseña"
+                       @bind="modelo.Password"
+                       @bind:event="oninput" />
+                <button class="btn-toggle-password" type="button" @onclick="TogglePassword">
+                    @(mostrarPassword ? "🙈" : "👁")
+                </button>
+            </div>
+            @if (errores.ContainsKey("password"))
+            {
+                <span class="form-error">@errores["password"]</span>
+            }
+        </div>
+
+        <!-- ── RECORDARME + OLVIDÉ CONTRASEÑA ─────── -->
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: var(--space-md);">
+            <label style="display:flex; align-items:center; gap: var(--space-sm); cursor:pointer;">
+                <input type="checkbox"
+                       @bind="modelo.Recordarme"
+                       style="accent-color: var(--color-primary); width:15px; height:15px;" />
+                <span class="text-sm text-muted">Recordarme</span>
+            </label>
+            <a href="@AppRouters.RecuperarPassword" class="text-sm">
+                ¿Olvidaste tu contraseña?
+            </a>
+        </div>
+
+        <!-- ── BOTÓN SUBMIT ───────────────────────── -->
+        <button class="btn btn-primary btn-full btn-lg"
+                @onclick="LoginConEmail"
+                disabled="@resultado.Cargando">
+            @if (resultado.Cargando)
+            {
+                <span class="spinner"></span>
+                <span>Entrando...</span>
+            }
+            else
+            {
+                <span>Iniciar sesión</span>
+            }
+        </button>
+
+        <!-- ── INTENTOS BLOQUEADO ─────────────────── -->
+        @if (bloqueado)
+        {
+            <div class="alert alert-warning animate-fadeIn" style="margin-top: var(--space-md);">
+                <span>🔒</span>
+                <span>Demasiados intentos fallidos. Cuenta bloqueada temporalmente.</span>
+            </div>
+        }
+
+        <p class="text-sm text-muted" style="text-align:center; margin-top: var(--space-lg);">
+            ¿No tienes cuenta?
+            <a href="@AppRouters.Registro">Regístrate gratis</a>
+        </p>
+
+    </div>
+</div>
+
+@code {
+
+    private LoginShipment modelo = new();
+    private UiResult resultado = UiResult.Inicial();
+    private bool mostrarPassword = false;
+    private bool bloqueado = false;
+    private int intentosFallidos = 0;
+    private const int MaxIntentos = 5;
+
+    private Dictionary<string, string> errores = new();
+
+    private void LoginConMicrosoft()
+    {
+           
+    }
+
+    private async Task LoginConEmail()
+    {
+        
+        if (bloqueado) return;
+
+        errores = LoginTools.ValidarLogin(modelo.Email, modelo.Password);
+        if (errores.Count > 0) return;
+
+        resultado = UiResult.EnCarga();
+
+        try
+        {
+            await Task.Delay(1000);
+            
+            intentosFallidos = 0;
+            resultado = UiResult.Ok();
+        }
+        catch (Exception)
+        {
+            intentosFallidos++;
+
+            if (intentosFallidos >= MaxIntentos)
+            {
+                bloqueado = true;
+                resultado = UiResult.Inicial();
+            }
+            else
+            {
+                resultado = UiResult.ConError("Email o contraseña incorrectos.");
+            }
+        }
+    }
+
+    private void TogglePassword() => mostrarPassword = !mostrarPassword;
+
+    
+}

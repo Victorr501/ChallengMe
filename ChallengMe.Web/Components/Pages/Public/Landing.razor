@@ -1,0 +1,370 @@
+﻿@page "/"
+@layout PublicLayout
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="landing-hero">
+
+    <div class="landing-title animate-fadeInUp">
+        Cada día,<br />
+        un nuevo <span class="highlight">reto.</span>
+    </div>
+
+    <p class="landing-subtitle animate-fadeInUp delay-1">
+        ChallengMe! te propone cada día un reto personalizado
+        según tus gustos. Complétalo, acumula puntos y mantén
+        tu racha viva.
+    </p>
+
+    <div class="landing-cta-group animate-fadeInUp delay-2">
+        <a href="@AppRouters.Registro" class="btn btn-primary btn-lg">
+            Empieza gratis
+        </a>
+        <a href="#como-funciona" class="btn btn-secondary btn-lg">
+            Ver cómo funciona
+        </a>
+    </div>
+
+    <div class="landing-features animate-fadeInUp delay-3">
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-title">Retos personalizados</div>
+            <p class="feature-desc">
+                La IA genera cada día un reto pensado
+                específicamente para ti, según tus intereses
+                y nivel de dificultad.
+            </p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔥</div>
+            <div class="feature-title">Sistema de rachas</div>
+            <p class="feature-desc">
+                Completa un reto cada día y construye tu racha.
+                Cuanto más larga, más motivación para no romperla.
+            </p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🏆</div>
+            <div class="feature-title">Ranking global</div>
+            <p class="feature-desc">
+                Compite con otros usuarios, acumula puntos y
+                escala posiciones en el ranking para demostrar
+                tu constancia.
+            </p>
+        </div>
+    </div>
+
+</section>
+
+<!-- ── PREVIEWS ──────────────────────────────────────────────── -->
+<section id="como-funciona" class="previews-section animate-fadeInUp">
+
+    <div class="previews-section__header">
+        <span class="previews-section__label">La app por dentro</span>
+        <h2 class="previews-section__title">Todo lo que necesitas, en un vistazo</h2>
+    </div>
+
+    <div class="previews-carousel" id="previewsCarousel">
+
+        <!-- DASHBOARD -->
+        <div class="preview-item">
+            <div class="preview-screen">
+                <div class="preview-topbar">
+                    <span class="preview-topbar__logo">Challenge<span>Me!</span></span>
+                    <div class="preview-topbar__dots">
+                        <div class="preview-topbar__dot"></div>
+                        <div class="preview-topbar__dot"></div>
+                        <div class="preview-topbar__dot"></div>
+                    </div>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-stats">
+                        <div class="preview-stat">
+                            <div class="preview-stat__num">320</div>
+                            <div class="preview-stat__label">Puntos</div>
+                        </div>
+                        <div class="preview-stat" style="display:flex; align-items:center; gap:8px;">
+                            <div class="preview-racha">
+                                <div class="preview-racha__num">7</div>
+                                <div class="preview-racha__label">días</div>
+                            </div>
+                            <div>
+                                <div class="preview-stat__num" style="font-size:0.75rem;">Racha</div>
+                                <div class="preview-stat__label">activa 🔥</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="preview-card preview-card--reto">
+                        <span class="preview-badge">Creatividad</span>
+                        <div class="preview-title">Dibuja algo que represente tu día de hoy</div>
+                        <div class="preview-desc">Usa lo que tengas a mano. No tiene que ser perfecto.</div>
+                        <div style="display:flex; gap:6px;">
+                            <div class="preview-btn" style="flex:1;">Completar</div>
+                            <div class="preview-btn preview-btn--outline" style="flex:1;">Otro reto</div>
+                        </div>
+                    </div>
+                    <div class="preview-meta">
+                        <span>Tiempo restante</span>
+                        <span class="preview-meta__val" style="color: var(--color-danger);">1h 42min</span>
+                    </div>
+                </div>
+            </div>
+            <span class="preview-screen-name">Dashboard</span>
+        </div>
+
+        <!-- RETO DEL DÍA -->
+        <div class="preview-item">
+            <div class="preview-screen">
+                <div class="preview-topbar">
+                    <span class="preview-topbar__logo">Mi <span>reto</span></span>
+                    <div class="preview-topbar__dots">
+                        <div class="preview-topbar__dot"></div>
+                        <div class="preview-topbar__dot"></div>
+                        <div class="preview-topbar__dot"></div>
+                    </div>
+                </div>
+                <div class="preview-body">
+                    <span class="preview-badge">Creatividad · Difícil</span>
+                    <div class="preview-title" style="font-size:0.85rem; margin-bottom:6px;">
+                        Dibuja algo que represente tu día de hoy
+                    </div>
+                    <div class="preview-desc">
+                        Dedícale al menos 15 minutos. Puedes usar papel, tablet o lo que tengas a mano.
+                    </div>
+                    <div class="preview-divider"></div>
+                    <div class="preview-meta" style="margin-bottom:4px;">
+                        <span>Duración estimada</span>
+                        <span class="preview-meta__val">20 min</span>
+                    </div>
+                    <div class="preview-meta" style="margin-bottom:4px;">
+                        <span>Puntos al completar</span>
+                        <span class="preview-meta__val" style="color: var(--color-success);">+35 pts</span>
+                    </div>
+                    <div class="preview-meta" style="margin-bottom:8px;">
+                        <span>Regeneraciones</span>
+                        <span class="preview-meta__val">2 restantes</span>
+                    </div>
+                    <div class="preview-divider"></div>
+                    <div class="preview-btn" style="margin-top:8px;">Marcar como completado</div>
+                </div>
+            </div>
+            <span class="preview-screen-name">Reto del día</span>
+        </div>
+
+        <!-- HISTORIAL -->
+        <div class="preview-item">
+            <div class="preview-screen">
+                <div class="preview-topbar">
+                    <span class="preview-topbar__logo">Challenge<span>Me!</span></span>
+                    <div class="preview-topbar__dots">
+                        <div class="preview-topbar__dot"></div>
+                        <div class="preview-topbar__dot"></div>
+                        <div class="preview-topbar__dot"></div>
+                    </div>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-card">
+                        <div class="preview-meta" style="margin-bottom:4px;">
+                            <span>23 mar</span>
+                            <span class="preview-badge preview-badge--success">Completado</span>
+                        </div>
+                        <div class="preview-title">Cocina una receta nueva</div>
+                        <div class="preview-meta">
+                            <span>Cocina · Fácil</span>
+                            <span class="preview-meta__val" style="color: var(--color-success);">+10 pts</span>
+                        </div>
+                    </div>
+                    <div class="preview-card">
+                        <div class="preview-meta" style="margin-bottom:4px;">
+                            <span>22 mar</span>
+                            <span class="preview-badge preview-badge--success">Completado</span>
+                        </div>
+                        <div class="preview-title">Llama a alguien que no ves</div>
+                        <div class="preview-meta">
+                            <span>Social · Medio</span>
+                            <span class="preview-meta__val" style="color: var(--color-success);">+20 pts</span>
+                        </div>
+                    </div>
+                    <div class="preview-card">
+                        <div class="preview-meta" style="margin-bottom:4px;">
+                            <span>21 mar</span>
+                            <span class="preview-badge preview-badge--warning">Expirado</span>
+                        </div>
+                        <div class="preview-title">Sal a caminar 20 minutos</div>
+                        <div class="preview-meta">
+                            <span>Deporte · Fácil</span>
+                            <span class="preview-meta__val" style="color: var(--color-text-secondary);">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span class="preview-screen-name">Historial</span>
+        </div>
+
+        <!-- RANKING -->
+        <div class="preview-item">
+            <div class="preview-screen">
+                <div class="preview-topbar">
+                    <span class="preview-topbar__logo">Challenge<span>Me!</span></span>
+                    <div class="preview-topbar__dots">
+                        <div class="preview-topbar__dot"></div>
+                        <div class="preview-topbar__dot"></div>
+                        <div class="preview-topbar__dot"></div>
+                    </div>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-rank-item">
+                        <span class="preview-rank__pos" style="color: #F59E0B;">1</span>
+                        <div class="preview-rank__avatar">MG</div>
+                        <span class="preview-rank__name">marta_g</span>
+                        <span class="preview-rank__pts">870 pts</span>
+                    </div>
+                    <div class="preview-rank-item">
+                        <span class="preview-rank__pos" style="color: #94A3B8;">2</span>
+                        <div class="preview-rank__avatar">JP</div>
+                        <span class="preview-rank__name">juanp</span>
+                        <span class="preview-rank__pts">740 pts</span>
+                    </div>
+                    <div class="preview-rank-item">
+                        <span class="preview-rank__pos" style="color: #CD7C2F;">3</span>
+                        <div class="preview-rank__avatar">AL</div>
+                        <span class="preview-rank__name">alex_l</span>
+                        <span class="preview-rank__pts">695 pts</span>
+                    </div>
+                    <div class="preview-divider"></div>
+                    <div class="preview-rank-item preview-rank-item--me">
+                        <span class="preview-rank__pos" style="color: var(--color-primary-light);">8</span>
+                        <div class="preview-rank__avatar" style="background: rgba(59,130,246,0.2); color: var(--color-primary-light);">TU</div>
+                        <span class="preview-rank__name" style="color: var(--color-primary-light);">tú</span>
+                        <span class="preview-rank__pts" style="color: var(--color-primary-light);">320 pts</span>
+                    </div>
+                    <div class="preview-rank-item">
+                        <span class="preview-rank__pos">9</span>
+                        <div class="preview-rank__avatar">SR</div>
+                        <span class="preview-rank__name">sara_r</span>
+                        <span class="preview-rank__pts">298 pts</span>
+                    </div>
+                    <div class="preview-rank-item">
+                        <span class="preview-rank__pos">10</span>
+                        <div class="preview-rank__avatar">DM</div>
+                        <span class="preview-rank__name">d_marco</span>
+                        <span class="preview-rank__pts">251 pts</span>
+                    </div>
+                </div>
+            </div>
+            <span class="preview-screen-name">Ranking</span>
+        </div>
+
+    </div>
+
+    <!-- Indicadores y flechas -->
+    <div class="previews-indicators" id="previewsIndicators">
+        <button class="previews-indicator active" data-index="0"></button>
+        <button class="previews-indicator" data-index="1"></button>
+        <button class="previews-indicator" data-index="2"></button>
+        <button class="previews-indicator" data-index="3"></button>
+    </div>
+
+    <div class="previews-nav">
+        <button class="previews-nav__btn" id="prevBtn">&#8592;</button>
+        <button class="previews-nav__btn" id="nextBtn">&#8594;</button>
+    </div>
+
+</section>
+
+<!-- ── CTA FINAL ─────────────────────────────────────────────── -->
+<section style="padding: var(--space-2xl) var(--space-lg); text-align: center;">
+    <div class="card" style="max-width: 600px; margin: 0 auto; padding: var(--space-2xl);">
+        <h2 class="h1" style="margin-bottom: var(--space-md);">
+            ¿Listo para el primer reto?
+        </h2>
+        <p class="landing-subtitle" style="margin-bottom: var(--space-xl);">
+            Regístrate gratis, elige tus intereses y en menos
+            de un minuto tendrás tu primer reto del día.
+        </p>
+        <a href="@AppRouters.Registro" class="btn btn-primary btn-lg btn-full">
+            Crear mi cuenta gratis
+        </a>
+        <p class="text-sm text-muted" style="margin-top: var(--space-md);">
+            ¿Ya tienes cuenta?
+            <a href="@AppRouters.Login">Inicia sesión</a>
+        </p>
+    </div>
+</section>
+<script>
+    (function () {
+        const carousel = document.getElementById('previewsCarousel');
+        const indicators = document.querySelectorAll('.previews-indicator');
+        const total = 4;
+        let current = 0;
+
+        // Obtiene los 4 items del carrusel
+        function getItems() {
+            return carousel.querySelectorAll('.preview-item');
+        }
+
+        // Actualiza qué indicador está activo
+        function setActive(index) {
+            current = index;
+            indicators.forEach((ind, i) => {
+                ind.classList.toggle('active', i === index);
+            });
+        }
+
+        // Navega a un item concreto
+        function goTo(index) {
+            const items = getItems();
+            if (!items[index]) return;
+            items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            setActive(index);
+        }
+
+        // Botones de flecha
+        document.getElementById('nextBtn').addEventListener('click', function () {
+            goTo((current + 1) % total);
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', function () {
+            goTo((current - 1 + total) % total);
+        });
+
+        // Click en indicadores
+        indicators.forEach(function (ind) {
+            ind.addEventListener('click', function () {
+                goTo(parseInt(ind.dataset.index));
+            });
+        });
+
+        // Drag con ratón
+        let isDragging = false;
+        let startX = 0;
+        let scrollStart = 0;
+
+        carousel.addEventListener('mousedown', function (e) {
+            isDragging = true;
+            startX = e.pageX - carousel.offsetLeft;
+            scrollStart = carousel.scrollLeft;
+        });
+
+        carousel.addEventListener('mousemove', function (e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            carousel.scrollLeft = scrollStart - (e.pageX - carousel.offsetLeft - startX);
+        });
+
+        carousel.addEventListener('mouseup', function () { isDragging = false; });
+        carousel.addEventListener('mouseleave', function () { isDragging = false; });
+
+        // Actualiza indicador al hacer scroll manual o touch
+        carousel.addEventListener('scroll', function () {
+            const items = getItems();
+            const center = carousel.scrollLeft + carousel.offsetWidth / 2;
+            let closest = 0;
+            let minDist = Infinity;
+            items.forEach(function (el, i) {
+                const dist = Math.abs(el.offsetLeft + el.offsetWidth / 2 - center);
+                if (dist < minDist) { minDist = dist; closest = i; }
+            });
+            setActive(closest);
+        });
+    })();
+</script>

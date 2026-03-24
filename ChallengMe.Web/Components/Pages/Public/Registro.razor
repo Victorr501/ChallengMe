@@ -1,0 +1,186 @@
+﻿@page "/registro"
+@layout PublicLayout
+
+<div class="auth-container">
+    <div class="auth-card animate-scaleIn">
+
+        <!-- Logo -->
+        <div class="auth-logo">
+            Challenge<span>Me!</span>
+        </div>
+
+        <!-- Título -->
+        <h1 class="h2" style="text-align:center; margin-bottom: var(--space-xs);">
+            Crea tu cuenta
+        </h1>
+        <p class="text-sm text-muted" style="text-align:center; margin-bottom: var(--space-xl);">
+            Únete y empieza tu primer reto hoy
+        </p>
+
+        <!-- ── BOTÓN AZURE AD ─────────────────────────── -->
+        <button class="btn-microsoft" @onclick="RegistrarConMicrosoft">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 21 21">
+                <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+                <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+                <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+                <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+            </svg>
+            Continuar con Microsoft
+        </button>
+
+        <!-- ── DIVISOR ─────────────────────────────────── -->
+        <div class="auth-divider">o regístrate con email</div>
+
+        <!-- ── FORMULARIO EMAIL/CONTRASEÑA ───────────── -->
+        @* Alerta de error global *@
+        @if (!string.IsNullOrEmpty(errorMensaje))
+        {
+            <div class="alert alert-error animate-fadeIn">
+                <span>⚠</span>
+                <span>@errorMensaje</span>
+            </div>
+        }
+
+        @* Alerta de éxito *@
+        @if (registroExitoso)
+        {
+            <div class="alert alert-success animate-fadeIn">
+                <span>✓</span>
+                <span>Cuenta creada. Revisa tu email para verificarla.</span>
+            </div>
+        }
+
+        <div class="form-group">
+            <label class="form-label" for="nombre">Nombre de usuario</label>
+            <input class="form-input @(errores.ContainsKey("nombre") ? "input-error" : "")"
+                   id="nombre"
+                   type="text"
+                   placeholder="ej. juanp_92"
+                   @bind="modelo.NombreUsuario"
+                   @bind:event="oninput"
+                   maxlength="30" />
+            @if (errores.ContainsKey("nombre"))
+            {
+                <span class="form-error">@errores["nombre"]</span>
+            }
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input class="form-input @(errores.ContainsKey("email") ? "input-error" : "")"
+                   id="email"
+                   type="email"
+                   placeholder="tu@email.com"
+                   @bind="modelo.Email"
+                   @bind:event="oninput" />
+            @if (errores.ContainsKey("email"))
+            {
+                <span class="form-error">@errores["email"]</span>
+            }
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="password">Contraseña</label>
+            <div class="input-password-wrap">
+                <input class="form-input @(errores.ContainsKey("password") ? "input-error" : "")"
+                       id="password"
+                       type="@(mostrarPassword ? "text" : "password")"
+                       placeholder="Mínimo 8 caracteres"
+                       @bind="modelo.Password"
+                       @bind:event="oninput" />
+                <button class="btn-toggle-password" type="button" @onclick="TogglePassword">
+                    @(mostrarPassword ? "🙈" : "👁")
+                </button>
+            </div>
+            @if (errores.ContainsKey("password"))
+            {
+                <span class="form-error">@errores["password"]</span>
+            }
+            
+            @if (!string.IsNullOrEmpty(modelo.Password))
+            {
+                <div class="password-strength">
+                    <div class="password-strength__bar">
+                        <div class="password-strength__fill strength-@RegistarTools.Evaluar(modelo.Password)"></div>
+                    </div>
+                    <span class="password-strength__label">@RegistarTools.Evaluar(modelo.Password)</span>
+                </div>
+            }
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="passwordConfirm">Confirmar contraseña</label>
+            <input class="form-input @(errores.ContainsKey("passwordConfirm") ? "input-error" : "")"
+                   id="passwordConfirm"
+                   type="password"
+                   placeholder="Repite la contraseña"
+                   @bind="modelo.PasswordConfirm"
+                   @bind:event="oninput" />
+            @if (errores.ContainsKey("passwordConfirm"))
+            {
+                <span class="form-error">@errores["passwordConfirm"]</span>
+            }
+        </div>
+
+        <button class="btn btn-primary btn-full btn-lg"
+                style="margin-top: var(--space-md);"
+                @onclick="RegistrarConEmail"
+                disabled="@cargando">
+            @if (cargando)
+            {
+                <span class="spinner"></span>
+                <span>Creando cuenta...</span>
+            }
+            else
+            {
+                <span>Crear cuenta</span>
+            }
+        </button>
+
+        <p class="text-sm text-muted" style="text-align:center; margin-top: var(--space-lg);">
+            ¿Ya tienes cuenta?
+            <a href="@AppRouters.Login">Inicia sesión</a>
+        </p>
+
+    </div>
+</div>
+
+@code {
+
+    private RegistShipment modelo = new();
+    private UiResult resultado = UiResult.Inicial();
+    private bool mostrarPassword = false;
+    private Dictionary<string, string> errores = new();
+
+    private bool cargando => resultado.Cargando;
+    private bool registroExitoso => resultado.Exitoso;
+    private string errorMensaje => resultado.Error;
+
+    private void RegistrarConMicrosoft()
+    {
+        
+    }
+
+    private async Task RegistrarConEmail()
+    {
+        errores = RegistarTools.ValidarRegistro(
+            modelo.NombreUsuario, modelo.Email,
+            modelo.Password, modelo.PasswordConfirm);
+
+        if (errores.Count > 0) return;
+
+        resultado = UiResult.EnCarga();
+
+        try
+        {
+            await Task.Delay(1000); 
+            resultado = UiResult.Ok();
+        }
+        catch (Exception)
+        {
+            resultado = UiResult.ConError("Ha ocurrido un error. Inténtalo de nuevo.");
+        }
+    }
+
+    private void TogglePassword() => mostrarPassword = !mostrarPassword;
+}
