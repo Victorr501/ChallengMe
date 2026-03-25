@@ -6,4 +6,18 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.72" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChallengMe.Models\ChallengMe.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="UsuarioRepository\" />
+  </ItemGroup>
+
 </Project>
