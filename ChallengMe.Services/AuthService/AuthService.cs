@@ -8,6 +8,9 @@ namespace ChallengMe.Services.AuthService
 {
     public class AuthService : IAuthService
     {
+
+        // Sin terminar
+
         private readonly IAzureAdService _azureAdService;
         //private readonly IUsuarioRepository _usuarioRepository;
         private readonly IJwtService _jwtService;
@@ -21,7 +24,7 @@ namespace ChallengMe.Services.AuthService
             //_usuarioRepository = usuarioRepository;
         }
 
-        public async Task<AuthResultado> LoginMicrosoftAsync(string tokenMicrosoft)
+        public async Task<AuthResultado> LogingMicrosoftAsync(string tokenMicrosoft)
         {
             
             var email = await _azureAdService.ValidarTokenYObtenerEmailAsync(tokenMicrosoft);

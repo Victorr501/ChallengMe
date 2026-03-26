@@ -18,8 +18,4 @@
     <ProjectReference Include="..\ChallengMe.Repositories\ChallengMe.Repositories.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Exception\" />
-  </ItemGroup>
-
 </Project>

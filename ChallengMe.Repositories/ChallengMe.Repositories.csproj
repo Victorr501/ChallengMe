@@ -16,8 +16,4 @@
     <ProjectReference Include="..\ChallengMe.Models\ChallengMe.Models.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="UsuarioRepository\" />
-  </ItemGroup>
-
 </Project>

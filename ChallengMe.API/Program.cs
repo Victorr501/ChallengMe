@@ -1,3 +1,4 @@
+using ChallengMe.API.ExceptionMiddleware;
 using ChallengMe.API.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,10 +23,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

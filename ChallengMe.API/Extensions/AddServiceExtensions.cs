@@ -1,4 +1,5 @@
 ﻿using ChallengMe.AzureAD.AzureAd;
+using ChallengMe.Services.AuthService;
 using ChallengMe.Services.JwtService;
 
 namespace ChallengMe.API.Extensions
@@ -12,6 +13,9 @@ namespace ChallengMe.API.Extensions
 
             //Servidor de AzureAd
             services.AddScoped<IAzureAdService, AzureAdService>();
+
+            //Servers
+            services.AddScoped<IAuthService, AuthService>();
 
             return services;
         }
