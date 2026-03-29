@@ -361,3 +361,11 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Variables de entorno (contienen secretos - nunca subir a git)
+.env
+.env.local
+.env.*.local
+
+# Azure Functions local settings (contienen secretos)
+local.settings.json
