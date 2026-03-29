@@ -1,5 +1,4 @@
-﻿using ChallengMe.Models.Auth;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +8,8 @@ namespace ChallengMe.Services.AuthService
 {
     public interface IAuthService
     {
-        Task<AuthResultado> LogingMicrosoftAsync(string tokenMicrosoft);
+        Task<String> LogingMicrosoftAsync(string tokenMicrosoft);
+        Task<String> RegistroEmailAsync(string email, string password, string nombreUsuario);
+        Task<String> LoginEmailAsync(string email, string password);
     }
 }

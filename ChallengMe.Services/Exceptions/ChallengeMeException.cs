@@ -10,7 +10,7 @@ namespace ChallengMe.Services.Exceptions
     {
         public int StatusCode { get; set; }
 
-        protected ChallengeMeException(string message, int statusCode) : base (message)
+        public ChallengeMeException(string message, int statusCode) : base (message)
         {
             StatusCode = statusCode;
         }
