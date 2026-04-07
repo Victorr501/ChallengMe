@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChallengMe.Models.Auth.DTOs
+namespace ChallengMe.Web.Models.Auth
 {
-    public class TokenMicrosoftRequest
+    public class AuthResponse
     {
-        public string Code { get; set; }
+        public string Token { get; set; } = string.Empty;
     }
 }

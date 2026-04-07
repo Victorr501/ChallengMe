@@ -1,10 +1,13 @@
 ﻿@page "/login"
+@using ChallengMe.Web.Services
 @layout PublicLayout
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject ApiClient Api
 
 <div class="auth-container">
     <div class="auth-card animate-scaleIn">
 
-        <!-- Logo -->
         <div class="auth-logo">
             Challenge<span>Me!</span>
         </div>
@@ -130,9 +133,24 @@
 
     private Dictionary<string, string> errores = new();
 
+    [Inject] IConfiguration Config { get; set; } = default!;
+
     private void LoginConMicrosoft()
     {
-           
+        var tenantId = Config["MicrosoftAuth:TenantId"];
+        var clientId = Config["MicrosoftAuth:ClientId"];
+        var redirectUri = Config["MicrosoftAuth:RedirectUri"];
+
+        var url = "https://login.microsoftonline.com/" + tenantId + "/oauth2/v2.0/authorize"
+                + "?client_id=" + Uri.EscapeDataString(clientId!)
+                + "&response_type=code"
+                + "&redirect_uri=" + Uri.EscapeDataString(redirectUri!)
+                + "&scope=" + Uri.EscapeDataString("openid profile email")
+                + "&response_mode=query";
+
+        Console.WriteLine("Redirigiendo a Microsoft Login: " + url);
+        
+        Navigation.NavigateTo(url, forceLoad: true);
     }
 
     private async Task LoginConEmail()

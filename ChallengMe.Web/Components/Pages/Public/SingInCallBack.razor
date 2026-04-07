@@ -1,0 +1,77 @@
+﻿@page "/signin-oidc"
+@rendermode InteractiveServer
+@using ChallengMe.Web.Models.Auth
+@using ChallengMe.Web.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@layout PublicLayout
+@inject ApiClient Api
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthStateProvider
+
+<div class="auth-container">
+    <div class="auth-card animate-scaleIn">
+        <div class="auth-logo">Challenge<span>Me!</span></div>
+        <div class="empty-state">
+            <div class="empty-state-icon">⏳</div>
+            <p class="empty-state-title">Verificando tu cuenta...</p>
+            <p class="text-sm text-muted">Estamos comprobando tu identidad con Microsoft</p>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // OnAfterRender en vez de OnInitialized porque necesitamos
+        // JS (localStorage) y JS solo está disponible después del render
+        if (!firstRender) return;
+
+        // Leer el "code" que Azure AD añadió a la URL
+        // La URL llega así: /signin-oidc?code=ABC123&session_state=XYZ
+        var uri = new Uri(Navigation.Uri);
+        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+        if (!query.TryGetValue("code", out var code) || string.IsNullOrWhiteSpace(code))
+        {
+            Navigation.NavigateTo("/login?error=microsoft", forceLoad: true);
+            return;
+        }
+
+        try
+        {
+
+            var response = await Api.Http.PostAsJsonAsync(
+                "/api/auth/login-microsoft",
+                new AuthShipment { Code = code.ToString() });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Error en la respuesta");
+                return;
+            }
+
+            var resultado = await response.Content.ReadFromJsonAsync<AuthResponse>();
+
+            if (resultado?.Token is null)
+            {
+                Console.WriteLine("Falta el token");
+                return;
+            }
+
+            // Guardar el JWT propio en localStorage
+            await JS.InvokeVoidAsync("localStorage.setItem", AuthConstants.JwtKey, resultado.Token);
+
+            // Notificar a Blazor que hay un usuario autenticado
+            var provider = (JwtAuthStateProvider)AuthStateProvider;
+            provider.NotificarLogin(resultado.Token);
+
+            Navigation.NavigateTo("/app/dashboard", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+}

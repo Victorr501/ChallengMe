@@ -1,5 +1,10 @@
 ﻿@page "/registro"
+@using ChallengMe.Web.Services
 @layout PublicLayout
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject ApiClient Api
+@inject IConfiguration Config
 
 <div class="auth-container">
     <div class="auth-card animate-scaleIn">
@@ -156,10 +161,31 @@
     private bool registroExitoso => resultado.Exitoso;
     private string errorMensaje => resultado.Error;
 
+    
+
     private void RegistrarConMicrosoft()
     {
-        
+        var tenantId = Config["MicrosoftAuth:TenantId"];
+        var clientId = Config["MicrosoftAuth:ClientId"];
+        var redirectUri = Config["MicrosoftAuth:RedirectUri"];
+
+        var url = "https://login.microsoftonline.com/" + tenantId + "/oauth2/v2.0/authorize"
+                + "?client_id=" + Uri.EscapeDataString(clientId!)
+                + "&response_type=code"
+                + "&redirect_uri=" + Uri.EscapeDataString(redirectUri!)
+                + "&scope=" + Uri.EscapeDataString("openid profile email")
+                + "&response_mode=query";
+
+        Console.WriteLine("Redirigiendo a Microsoft Login: " + url);
+
+        Navigation.NavigateTo(url, forceLoad: true);
     }
+
+    // private void RegistrarConMicrosoft()
+    // {
+    //     // Sin IConfiguration, solo para confirmar que el click llega
+    //     Navigation.NavigateTo("https://www.google.com", forceLoad: true);
+    // }
 
     private async Task RegistrarConEmail()
     {

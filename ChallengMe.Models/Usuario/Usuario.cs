@@ -17,7 +17,7 @@ namespace ChallengMe.Models.Usuario
         public int PuntosTotal { get; set; } = 0;
         public int RachaActual { get; set; } = 0;
         public int RachaMaxima { get; set; } = 0;
-        public DateOnly? UltimaActividad { get; set; }
+        public DateTime? UltimaActividad { get; set; }
         public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
     }
 }

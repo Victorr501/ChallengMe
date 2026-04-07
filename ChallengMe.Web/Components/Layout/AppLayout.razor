@@ -1,0 +1,108 @@
+﻿@* Layouts/AppLayout.razor *@
+
+@using ChallengMe.Web.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@inject NavigationManager Nav
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime JS
+
+@if (!_verificando)
+{
+    <div class="navbar">
+        <a href="/app/dashboard" class="navbar-brand">
+            Challenge<span>Me!</span>
+        </a>
+
+        <nav style="display:flex; gap:var(--space-lg); flex:1; justify-content:center;">
+            <a href="/app/dashboard" class="btn btn-ghost">🏠 Dashboard</a>
+            <a href="/app/reto" class="btn btn-ghost">⚡ Mi reto</a>
+            <a href="/app/historial" class="btn btn-ghost">🕐 Historial</a>
+            <a href="/app/ranking" class="btn btn-ghost">🏆 Ranking</a>
+        </nav>
+
+        <div style="position:relative;">
+            <button class="btn btn-ghost" @onclick="ToggleMenu"
+                    style="display:flex;align-items:center;gap:var(--space-sm);">
+                <div class="avatar" style="background:var(--color-primary);display:flex;
+                    align-items:center;justify-content:center;font-size:1rem;">
+                    👤
+                </div>
+                <span class="text-sm">@NombreUsuario</span>
+                <span>▾</span>
+            </button>
+
+            @if (_menuAbierto)
+            {
+                <div class="card animate-scaleIn"
+                     style="position:absolute;right:0;top:calc(100% + 8px);
+                    min-width:180px;padding:var(--space-sm);z-index:200;">
+                    <div style="padding:var(--space-sm) var(--space-md);">
+                        <p class="text-xs text-muted">Conectado como</p>
+                        <p class="text-sm" style="color:var(--color-text);">@NombreUsuario</p>
+                    </div>
+                    <hr style="border-color:var(--color-border);margin:var(--space-xs) 0;">
+                    <a href="/app/perfil" class="btn btn-ghost btn-full"
+                           style="justify-content:flex-start;">
+                        👤 Mi perfil
+                    </a>
+                    <button class="btn btn-ghost btn-full"
+                            style="justify-content:flex-start;color:var(--color-danger);"
+                            @onclick="CerrarSesion">
+                        🚪 Cerrar sesión
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div style="padding-top:60px; min-height:100vh;">
+        @Body
+    </div>
+}
+
+@code {
+    private bool _menuAbierto = false;
+    private string NombreUsuario = "Usuario";
+    private bool _verificando = true;  // ← empieza oculto
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var provider = AuthStateProvider as JwtAuthStateProvider;
+            if (provider != null)
+                await provider.InicializarAsync();
+
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var estaAutenticado = authState.User.Identity?.IsAuthenticated == true;
+
+
+            Console.WriteLine($"[AppLayout] Autenticado: {estaAutenticado}");
+
+            if (authState.User.Identity?.IsAuthenticated != true)
+            {
+                Nav.NavigateTo("/login", forceLoad: false);
+                return;
+            }
+
+            NombreUsuario = authState.User.FindFirst("nombre")?.Value
+                         ?? authState.User.FindFirst("name")?.Value
+                         ?? authState.User.FindFirst("email")?.Value
+                         ?? "Usuario";
+
+            _verificando = false;  // ← ahora muestra todo
+            StateHasChanged();
+        }
+    }
+
+    private void ToggleMenu() => _menuAbierto = !_menuAbierto;
+
+    private async Task CerrarSesion()
+    {
+        await JS.InvokeVoidAsync("localStorage.removeItem", "jwt_token");
+        var provider = (JwtAuthStateProvider)AuthStateProvider;
+        provider.NotificarLogout();
+        Nav.NavigateTo("/login", forceLoad: true);
+    }
+}

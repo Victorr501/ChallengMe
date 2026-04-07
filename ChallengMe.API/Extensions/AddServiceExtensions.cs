@@ -12,7 +12,7 @@ namespace ChallengMe.API.Extensions
             services.AddScoped<IJwtService, JwtService>();
 
             //Servidor de AzureAd
-            services.AddScoped<IAzureAdService, AzureAdService>();
+            services.AddHttpClient<IAzureAdService, AzureAdService>();
 
             //Servers
             services.AddScoped<IAuthService, AuthService>();

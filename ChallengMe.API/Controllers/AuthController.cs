@@ -23,7 +23,7 @@ namespace ChallengMe.API.Controllers
         [HttpPost("login-microsoft")]
         public async Task<IActionResult> LoginMicrosoft([FromBody] TokenMicrosoftRequest request)
         {
-            var token = await _authService.LogingMicrosoftAsync(request.Token);
+            var token = await _authService.LogingMicrosoftAsync(request.Code);
             return Ok(new AuthResponse { Token = token });
         }
 
