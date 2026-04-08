@@ -1,5 +1,6 @@
 ﻿@* Layouts/AppLayout.razor *@
 
+@using ChallengMe.Web.Models.Auth
 @using ChallengMe.Web.Services
 @using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
@@ -10,15 +11,15 @@
 @if (!_verificando)
 {
     <div class="navbar">
-        <a href="/app/dashboard" class="navbar-brand">
+        <a href=@AppRouters.Dashboard class="navbar-brand">
             Challenge<span>Me!</span>
         </a>
 
         <nav style="display:flex; gap:var(--space-lg); flex:1; justify-content:center;">
-            <a href="/app/dashboard" class="btn btn-ghost">🏠 Dashboard</a>
-            <a href="/app/reto" class="btn btn-ghost">⚡ Mi reto</a>
-            <a href="/app/historial" class="btn btn-ghost">🕐 Historial</a>
-            <a href="/app/ranking" class="btn btn-ghost">🏆 Ranking</a>
+            <a href=@AppRouters.Dashboard class="btn btn-ghost">🏠 Dashboard</a>
+            <a href=@AppRouters.Reto class="btn btn-ghost">⚡ Mi reto</a>
+            <a href=@AppRouters.Histioral class="btn btn-ghost">🕐 Historial</a>
+            <a href=@AppRouters.Ranking class="btn btn-ghost">🏆 Ranking</a>
         </nav>
 
         <div style="position:relative;">
@@ -42,7 +43,7 @@
                         <p class="text-sm" style="color:var(--color-text);">@NombreUsuario</p>
                     </div>
                     <hr style="border-color:var(--color-border);margin:var(--space-xs) 0;">
-                    <a href="/app/perfil" class="btn btn-ghost btn-full"
+                    <a href=@AppRouters.Perfil class="btn btn-ghost btn-full"
                            style="justify-content:flex-start;">
                         👤 Mi perfil
                     </a>
@@ -64,45 +65,50 @@
 @code {
     private bool _menuAbierto = false;
     private string NombreUsuario = "Usuario";
-    private bool _verificando = true;  // ← empieza oculto
+    private bool _verificando = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender) return;
+
+        var provider = AuthStateProvider as JwtAuthStateProvider;
+        if (provider != null)
+            await provider.InicializarAsync();
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
+        Console.WriteLine($"[AppLayout] Autenticado: {authState.User.Identity?.IsAuthenticated}");
+
+        if (authState.User.Identity?.IsAuthenticated != true)
         {
-            var provider = AuthStateProvider as JwtAuthStateProvider;
-            if (provider != null)
-                await provider.InicializarAsync();
-
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            var estaAutenticado = authState.User.Identity?.IsAuthenticated == true;
-
-
-            Console.WriteLine($"[AppLayout] Autenticado: {estaAutenticado}");
-
-            if (authState.User.Identity?.IsAuthenticated != true)
-            {
-                Nav.NavigateTo("/login", forceLoad: false);
-                return;
-            }
-
-            NombreUsuario = authState.User.FindFirst("nombre")?.Value
-                         ?? authState.User.FindFirst("name")?.Value
-                         ?? authState.User.FindFirst("email")?.Value
-                         ?? "Usuario";
-
-            _verificando = false;  // ← ahora muestra todo
-            StateHasChanged();
+            Nav.NavigateTo(AppRouters.Landing, forceLoad: false);
+            return;
         }
+
+        NombreUsuario = authState.User.FindFirst("nombre")?.Value
+                     ?? authState.User.FindFirst("name")?.Value
+                     ?? authState.User.FindFirst("email")?.Value
+                     ?? "Usuario";
+
+        _verificando = false;
+        StateHasChanged();
     }
 
     private void ToggleMenu() => _menuAbierto = !_menuAbierto;
 
     private async Task CerrarSesion()
     {
-        await JS.InvokeVoidAsync("localStorage.removeItem", "jwt_token");
+        // Borrar localStorage (flujo email/local)
+        await JS.InvokeVoidAsync("localStorage.removeItem", AuthConstants.JwtKey);
+
+        // Borrar cookie via JS (solo funciona si NO es HttpOnly)
+        // La cookie HttpOnly la borra el endpoint /logout del servidor
+        await JS.InvokeVoidAsync("eval",
+            $"document.cookie = '{AuthConstants.JwtKey}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'");
+
         var provider = (JwtAuthStateProvider)AuthStateProvider;
         provider.NotificarLogout();
-        Nav.NavigateTo("/login", forceLoad: true);
+
+        Nav.NavigateTo(AppRouters.Landing, forceLoad: true);
     }
 }

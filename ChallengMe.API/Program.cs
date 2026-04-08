@@ -10,6 +10,7 @@ builder.Services.AddServiceExtenions();
 builder.Services.AddControllerExtenions();
 builder.Services.AddAuthServices(builder.Configuration);
 builder.Services.AddSwaggerWithAuth();
+builder.Services.AddRateLimitExtensions();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -25,6 +26,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
+app.UseRateLimitExtensions();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

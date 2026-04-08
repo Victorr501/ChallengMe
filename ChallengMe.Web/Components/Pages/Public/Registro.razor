@@ -1,10 +1,13 @@
 ﻿@page "/registro"
+@using ChallengMe.Web.Models.Auth
 @using ChallengMe.Web.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @layout PublicLayout
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject ApiClient Api
 @inject IConfiguration Config
+@inject AuthenticationStateProvider AuthStateProvider
 
 <div class="auth-container">
     <div class="auth-card animate-scaleIn">
@@ -97,18 +100,17 @@
                     @(mostrarPassword ? "🙈" : "👁")
                 </button>
             </div>
-            @if (errores.ContainsKey("password"))
-            {
-                <span class="form-error">@errores["password"]</span>
+            @{
+
+                var resultado = RegistarTools.Evaluar(modelo.Password);
             }
-            
             @if (!string.IsNullOrEmpty(modelo.Password))
             {
                 <div class="password-strength">
                     <div class="password-strength__bar">
-                        <div class="password-strength__fill strength-@RegistarTools.Evaluar(modelo.Password)"></div>
+                        <div class="password-strength__fill strength-@resultado.Nivel"></div>
                     </div>
-                    <span class="password-strength__label">@RegistarTools.Evaluar(modelo.Password)</span>
+                    <span class="password-strength__label">@resultado.Texto</span>
                 </div>
             }
         </div>
@@ -181,11 +183,6 @@
         Navigation.NavigateTo(url, forceLoad: true);
     }
 
-    // private void RegistrarConMicrosoft()
-    // {
-    //     // Sin IConfiguration, solo para confirmar que el click llega
-    //     Navigation.NavigateTo("https://www.google.com", forceLoad: true);
-    // }
 
     private async Task RegistrarConEmail()
     {
@@ -199,8 +196,36 @@
 
         try
         {
-            await Task.Delay(1000); 
-            resultado = UiResult.Ok();
+            var response = await Api.Http.PostAsJsonAsync(
+                "/api/auth/registro",
+                new RegistroRequest
+                {
+                    Email = modelo.Email,
+                    Password = modelo.Password,
+                    NombreUsuario = modelo.NombreUsuario
+                });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                resultado = UiResult.ConError("Error al crear la cuenta. Inténtalo de nuevo.");
+                return;
+            }
+
+            var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
+
+            if (authResponse?.Token is null)
+            {
+                resultado = UiResult.ConError("Respuesta inválida del servidor.");
+                return;
+            }
+
+            // Guardar JWT igual que en signin-oidc
+            await JS.InvokeVoidAsync("localStorage.setItem", AuthConstants.JwtKey, authResponse.Token);
+
+            var provider = (JwtAuthStateProvider)AuthStateProvider;
+            provider.NotificarLogin(authResponse.Token);
+
+            Navigation.NavigateTo(AppRouters.Dashboard, forceLoad: true);
         }
         catch (Exception)
         {

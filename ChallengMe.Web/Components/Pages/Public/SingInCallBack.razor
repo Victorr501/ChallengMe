@@ -1,6 +1,4 @@
-﻿@page "/signin-oidc"
-@rendermode InteractiveServer
-@using ChallengMe.Web.Models.Auth
+﻿@using ChallengMe.Web.Models.Auth
 @using ChallengMe.Web.Services
 @using Microsoft.AspNetCore.Components.Authorization
 @layout PublicLayout
@@ -67,7 +65,7 @@
             var provider = (JwtAuthStateProvider)AuthStateProvider;
             provider.NotificarLogin(resultado.Token);
 
-            Navigation.NavigateTo("/app/dashboard", forceLoad: true);
+            Navigation.NavigateTo(AppRouters.Dashboard, forceLoad: true);
         }
         catch (Exception ex)
         {

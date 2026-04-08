@@ -1,6 +1,9 @@
 ﻿@page "/login"
+@using ChallengMe.Web.Models.Auth
 @using ChallengMe.Web.Services
+@using Microsoft.AspNetCore.Components.Authorization
 @layout PublicLayout
+@inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject ApiClient Api
@@ -165,10 +168,46 @@
 
         try
         {
-            await Task.Delay(1000);
-            
+            var response = await Api.Http.PostAsJsonAsync(
+                "/api/auth/login-email",
+                new LoginEmailRequest
+                {
+                    Email = modelo.Email,
+                    Password = modelo.Password
+                });
+
+            if (!response.IsSuccessStatusCode)
+            {
+                intentosFallidos++;
+
+                if (intentosFallidos >= MaxIntentos)
+                {
+                    bloqueado = true;
+                    resultado = UiResult.Inicial();
+                }
+                else
+                {
+                    resultado = UiResult.ConError("Email o contraseña incorrectos.");
+                }
+                return;
+            }
+
+            var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
+
+            if (authResponse?.Token is null)
+            {
+                resultado = UiResult.ConError("Respuesta inválida del servidor.");
+                return;
+            }
+
             intentosFallidos = 0;
-            resultado = UiResult.Ok();
+
+            await JS.InvokeVoidAsync("localStorage.setItem", AuthConstants.JwtKey, authResponse.Token);
+
+            var provider = (JwtAuthStateProvider)AuthStateProvider;
+            provider.NotificarLogin(authResponse.Token);
+
+            Navigation.NavigateTo(AppRouters.Dashboard, forceLoad: true);
         }
         catch (Exception)
         {
@@ -181,7 +220,7 @@
             }
             else
             {
-                resultado = UiResult.ConError("Email o contraseña incorrectos.");
+                resultado = UiResult.ConError("Ha ocurrido un error. Inténtalo de nuevo.");
             }
         }
     }

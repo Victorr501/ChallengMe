@@ -3,6 +3,7 @@ using ChallengMe.Services.AuthService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace ChallengMe.API.Controllers
 {
@@ -29,6 +30,7 @@ namespace ChallengMe.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("login-email")]
+        [EnableRateLimiting("login")]
         public async Task<IActionResult> LoginEmail([FromBody] LoginEmailRequest request)
         {
             var token = await _authService.LoginEmailAsync(request.Email, request.Password);
@@ -37,6 +39,7 @@ namespace ChallengMe.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("registro")]
+        [EnableRateLimiting("registro")]
         public async Task<IActionResult> Registro([FromBody] RegistroRequest request)
         {
             var token = await _authService.RegistroEmailAsync(
