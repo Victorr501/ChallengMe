@@ -1,14 +1,22 @@
-﻿@* Layouts/AppLayout.razor *@
-
-@using ChallengMe.Web.Models.Auth
+﻿@using ChallengMe.Web.Models.Auth
 @using ChallengMe.Web.Services
 @using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 @inject NavigationManager Nav
-@inject AuthenticationStateProvider AuthStateProvider
 @inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthStateProvider
 
-@if (!_verificando)
+@if (_verificando)
+{
+    <div style="display:flex; align-items:center; justify-content:center;
+        height:100vh; background:var(--color-bg);">
+        <div style="text-align:center; color:var(--color-text-secondary);">
+            <div style="font-size:2rem; margin-bottom:1rem;">⚡</div>
+            <p class="text-sm">Cargando...</p>
+        </div>
+    </div>
+}
+else if (_autenticado)
 {
     <div class="navbar">
         <a href=@AppRouters.Dashboard class="navbar-brand">
@@ -29,7 +37,7 @@
                     align-items:center;justify-content:center;font-size:1rem;">
                     👤
                 </div>
-                <span class="text-sm">@NombreUsuario</span>
+                <span class="text-sm">@_nombreUsuario</span>
                 <span>▾</span>
             </button>
 
@@ -40,7 +48,7 @@
                     min-width:180px;padding:var(--space-sm);z-index:200;">
                     <div style="padding:var(--space-sm) var(--space-md);">
                         <p class="text-xs text-muted">Conectado como</p>
-                        <p class="text-sm" style="color:var(--color-text);">@NombreUsuario</p>
+                        <p class="text-sm" style="color:var(--color-text);">@_nombreUsuario</p>
                     </div>
                     <hr style="border-color:var(--color-border);margin:var(--space-xs) 0;">
                     <a href=@AppRouters.Perfil class="btn btn-ghost btn-full"
@@ -64,51 +72,57 @@
 
 @code {
     private bool _menuAbierto = false;
-    private string NombreUsuario = "Usuario";
     private bool _verificando = true;
+    private bool _autenticado = false;
+    private string _nombreUsuario = "Usuario";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
 
-        var provider = AuthStateProvider as JwtAuthStateProvider;
-        if (provider != null)
-            await provider.InicializarAsync();
-
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-
-        Console.WriteLine($"[AppLayout] Autenticado: {authState.User.Identity?.IsAuthenticated}");
-
-        if (authState.User.Identity?.IsAuthenticated != true)
+        try
         {
-            Nav.NavigateTo(AppRouters.Landing, forceLoad: false);
-            return;
+            var token = await JS.InvokeAsync<string?>("localStorage.getItem", AuthConstants.JwtKey);
+
+            if (string.IsNullOrEmpty(token))
+            {
+                Nav.NavigateTo("/landing", forceLoad: false);
+                return;
+            }
+
+            var provider = AuthStateProvider as JwtAuthStateProvider;
+            provider?.EstablecerToken(token);
+
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var isAuth = authState.User.Identity?.IsAuthenticated == true;
+
+            if (!isAuth)
+            {
+                Nav.NavigateTo("/landing", forceLoad: false);
+                return;
+            }
+
+            _nombreUsuario = authState.User.FindFirst("nombre")?.Value
+                          ?? authState.User.FindFirst("email")?.Value
+                          ?? "Usuario";
+
+            _autenticado = true;
+            _verificando = false;
+            StateHasChanged();
         }
-
-        NombreUsuario = authState.User.FindFirst("nombre")?.Value
-                     ?? authState.User.FindFirst("name")?.Value
-                     ?? authState.User.FindFirst("email")?.Value
-                     ?? "Usuario";
-
-        _verificando = false;
-        StateHasChanged();
+        catch
+        {
+            Nav.NavigateTo("/landing", forceLoad: false);
+        }
     }
 
     private void ToggleMenu() => _menuAbierto = !_menuAbierto;
 
     private async Task CerrarSesion()
     {
-        // Borrar localStorage (flujo email/local)
         await JS.InvokeVoidAsync("localStorage.removeItem", AuthConstants.JwtKey);
-
-        // Borrar cookie via JS (solo funciona si NO es HttpOnly)
-        // La cookie HttpOnly la borra el endpoint /logout del servidor
-        await JS.InvokeVoidAsync("eval",
-            $"document.cookie = '{AuthConstants.JwtKey}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'");
-
-        var provider = (JwtAuthStateProvider)AuthStateProvider;
-        provider.NotificarLogout();
-
-        Nav.NavigateTo(AppRouters.Landing, forceLoad: true);
+        var provider = AuthStateProvider as JwtAuthStateProvider;
+        provider?.NotificarLogout();
+        Nav.NavigateTo("/landing", forceLoad: true);
     }
 }

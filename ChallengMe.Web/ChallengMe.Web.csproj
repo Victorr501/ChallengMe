@@ -10,6 +10,7 @@
   <ItemGroup>
     <Folder Include="Components\Shared\" />
     <Folder Include="Constants\" />
+    <Folder Include="Extensions\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 

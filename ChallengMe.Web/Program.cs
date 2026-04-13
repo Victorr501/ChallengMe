@@ -1,5 +1,4 @@
 using ChallengMe.Web.Components;
-using ChallengMe.Web.Extensions;
 using ChallengMe.Web.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -8,12 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Necesario para que AuthTokenHandler y JwtAuthStateProvider
-// puedan leer las cookies HttpOnly desde el servidor
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpContextAccessor(); // ← esta línea debe estar
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthStateProvider>();
+builder.Services.AddScoped<TokenStore>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthentication();
 
@@ -23,6 +21,7 @@ builder.Services.AddHttpClient<ApiClient>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!);
 }).AddHttpMessageHandler<AuthTokenHandler>();
+
 
 var app = builder.Build();
 
@@ -37,8 +36,8 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAntiforgery();
 
-// ── Callback de Microsoft OAuth ───────────────────────────────
-app.MapMicrosoftCallback();
+
+
 
 // ── Razor Components ──────────────────────────────────────────
 app.MapRazorComponents<App>()

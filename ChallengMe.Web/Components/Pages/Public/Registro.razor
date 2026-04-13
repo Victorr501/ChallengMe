@@ -219,13 +219,14 @@
                 return;
             }
 
-            // Guardar JWT igual que en signin-oidc
             await JS.InvokeVoidAsync("localStorage.setItem", AuthConstants.JwtKey, authResponse.Token);
 
-            var provider = (JwtAuthStateProvider)AuthStateProvider;
-            provider.NotificarLogin(authResponse.Token);
+            var provider = AuthStateProvider as JwtAuthStateProvider;
+            provider?.EstablecerToken(authResponse.Token);
 
             Navigation.NavigateTo(AppRouters.Dashboard, forceLoad: true);
+
+            
         }
         catch (Exception)
         {
