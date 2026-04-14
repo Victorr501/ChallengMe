@@ -1,29 +1,76 @@
 Copyright (c) 2026 Víctor Rubín
 
-LICENCIA DE USO RESTRINGIDO — CHALLENGEME!
+═══════════════════════════════════════════════════════════════
+RESTRICTED USE LICENSE — CHALLENGEME!
+═══════════════════════════════════════════════════════════════
 
-El código fuente de este repositorio se publica públicamente con fines 
+The source code of this repository is made publicly available for
+transparency and learning purposes only.
+
+THE FOLLOWING IS EXPRESSLY PROHIBITED without prior written
+authorization from the author:
+
+1. Using this code, in whole or in part, to offer any commercial
+   or publicly accessible service.
+
+2. Distributing, sublicensing or selling original or modified
+   versions of this code for commercial purposes.
+
+3. Deploying this code in production environments, either directly
+   or as part of another product or service.
+
+4. Using the name "ChallengMe!", its logo or any associated visual
+   identity element without the express authorization of the author.
+
+5. Contributing to the repository via pull request or any other
+   mechanism. This repository does not accept external contributions.
+
+6. Forking this repository for purposes other than personal and
+   local study.
+
+PERMITTED USE:
+
+- Viewing the code for educational or learning purposes.
+- Local use for personal, non-commercial study purposes.
+
+TO REQUEST A COMMERCIAL LICENSE:
+vrubinr501@gmail.com
+
+This software is provided "as is", without warranties of any kind.
+The author shall not be held liable for any damages arising from
+its use.
+
+Applicable law: Spanish legislation, in particular the Intellectual
+Property Law (Royal Legislative Decree 1/1996) and applicable
+European regulations. Any dispute shall be submitted to the courts
+of Madrid, Spain.
+
+═══════════════════════════════════════════════════════════════
+LICENCIA DE USO RESTRINGIDO — CHALLENGEME!
+═══════════════════════════════════════════════════════════════
+
+El código fuente de este repositorio se publica públicamente con fines
 de transparencia y aprendizaje.
 
 QUEDA EXPRESAMENTE PROHIBIDO, sin autorización escrita previa del autor:
 
-1. Usar este código, total o parcialmente, para ofrecer cualquier 
+1. Usar este código, total o parcialmente, para ofrecer cualquier
    servicio comercial o de acceso público.
 
-2. Distribuir, sublicenciar o vender versiones originales o modificadas 
+2. Distribuir, sublicenciar o vender versiones originales o modificadas
    de este código con fines comerciales.
 
-3. Desplegar este código en entornos de producción, ya sea de forma 
+3. Desplegar este código en entornos de producción, ya sea de forma
    directa o como parte de otro producto o servicio.
 
-4. Usar el nombre "ChallengMe!", su logotipo o cualquier elemento de 
+4. Usar el nombre "ChallengMe!", su logotipo o cualquier elemento de
    identidad visual asociado sin autorización expresa del autor.
 
-5. Realizar contribuciones al repositorio mediante pull request 
-   o cualquier otro mecanismo. Este repositorio no acepta 
+5. Realizar contribuciones al repositorio mediante pull request
+   o cualquier otro mecanismo. Este repositorio no acepta
    contribuciones externas.
 
-6. Crear forks del repositorio con fines distintos al estudio 
+6. Crear forks del repositorio con fines distintos al estudio
    personal y local.
 
 USO PERMITIDO:
@@ -37,6 +84,6 @@ vrubinr501@gmail.com
 Este software se proporciona "tal cual", sin garantías de ningún tipo.
 El autor no se hace responsable de ningún daño derivado de su uso.
 
-Ley aplicable: legislación española, en particular la Ley de Propiedad 
-Intelectual (Real Decreto Legislativo 1/1996) y normativa europea 
+Ley aplicable: legislación española, en particular la Ley de Propiedad
+Intelectual (Real Decreto Legislativo 1/1996) y normativa europea
 aplicable. Cualquier disputa se someterá a los tribunales de Madrid.
