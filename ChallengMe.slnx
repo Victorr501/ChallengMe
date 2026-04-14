@@ -1,6 +1,6 @@
 <Solution>
   <Project Path="ChallengMe.API/ChallengMe.API.csproj" />
-  <Project Path="ChallengMe.AzureAD/ChallengMe.AzureAD.csproj" />
+  <Project Path="ChallengMe.AzureAD/ChallengMe.ExternalAutentication.csproj" />
   <Project Path="ChallengMe.Functions/ChallengMe.Functions.csproj" />
   <Project Path="ChallengMe.GeminiServices/ChallengMe.GeminiServices.csproj" />
   <Project Path="ChallengMe.Models/ChallengMe.Models.csproj" />
