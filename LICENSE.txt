@@ -1,21 +1,42 @@
-MIT License
+Copyright (c) 2026 Víctor Rubín
 
-Copyright (c) [year] [fullname]
+LICENCIA DE USO RESTRINGIDO — CHALLENGEME!
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+El código fuente de este repositorio se publica públicamente con fines 
+de transparencia y aprendizaje.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+QUEDA EXPRESAMENTE PROHIBIDO, sin autorización escrita previa del autor:
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. Usar este código, total o parcialmente, para ofrecer cualquier 
+   servicio comercial o de acceso público.
+
+2. Distribuir, sublicenciar o vender versiones originales o modificadas 
+   de este código con fines comerciales.
+
+3. Desplegar este código en entornos de producción, ya sea de forma 
+   directa o como parte de otro producto o servicio.
+
+4. Usar el nombre "ChallengMe!", su logotipo o cualquier elemento de 
+   identidad visual asociado sin autorización expresa del autor.
+
+5. Realizar contribuciones al repositorio mediante pull request 
+   o cualquier otro mecanismo. Este repositorio no acepta 
+   contribuciones externas.
+
+6. Crear forks del repositorio con fines distintos al estudio 
+   personal y local.
+
+USO PERMITIDO:
+
+- Visualización del código con fines educativos o de aprendizaje.
+- Uso en entorno local para fines de estudio personal y no comercial.
+
+PARA SOLICITAR UNA LICENCIA COMERCIAL:
+vrubinr501@gmail.com
+
+Este software se proporciona "tal cual", sin garantías de ningún tipo.
+El autor no se hace responsable de ningún daño derivado de su uso.
+
+Ley aplicable: legislación española, en particular la Ley de Propiedad 
+Intelectual (Real Decreto Legislativo 1/1996) y normativa europea 
+aplicable. Cualquier disputa se someterá a los tribunales de Madrid.
