@@ -1,4 +1,5 @@
 using ChallengMe.Web.Components;
+using ChallengMe.Web.Extensions;
 using ChallengMe.Web.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -16,11 +17,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthentication();
 
 // HttpClient con el handler del token (cookie + localStorage como fallback)
-builder.Services.AddTransient<AuthTokenHandler>();
-builder.Services.AddHttpClient<ApiClient>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!);
-}).AddHttpMessageHandler<AuthTokenHandler>();
+builder.Services.AddApiServices(builder.Configuration);
 
 
 var app = builder.Build();

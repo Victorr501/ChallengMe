@@ -5,7 +5,7 @@
 @layout PublicLayout
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
-@inject ApiClient Api
+@inject AuthApiService AuthService
 @inject IConfiguration Config
 @inject AuthenticationStateProvider AuthStateProvider
 
@@ -196,39 +196,21 @@
 
         try
         {
-            var response = await Api.Http.PostAsJsonAsync(
-                "/api/auth/registro",
-                new RegistroRequest
-                {
-                    Email = modelo.Email,
-                    Password = modelo.Password,
-                    NombreUsuario = modelo.NombreUsuario
-                });
+            var authResponse = await AuthService.RegistroEmailAsync(
+                modelo.Email, modelo.Password, modelo.NombreUsuario);
 
-            if (!response.IsSuccessStatusCode)
+            if (authResponse?.Token is null)
             {
                 resultado = UiResult.ConError("Error al crear la cuenta. Inténtalo de nuevo.");
                 return;
             }
 
-            var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-
-            if (authResponse?.Token is null)
-            {
-                resultado = UiResult.ConError("Respuesta inválida del servidor.");
-                return;
-            }
-
             await JS.InvokeVoidAsync("localStorage.setItem", AuthConstants.JwtKey, authResponse.Token);
-
             var provider = AuthStateProvider as JwtAuthStateProvider;
             provider?.EstablecerToken(authResponse.Token);
-
             Navigation.NavigateTo(AppRouters.Dashboard, forceLoad: true);
-
-            
         }
-        catch (Exception)
+        catch
         {
             resultado = UiResult.ConError("Ha ocurrido un error. Inténtalo de nuevo.");
         }

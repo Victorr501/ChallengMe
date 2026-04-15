@@ -4,9 +4,9 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @layout PublicLayout
 @inject AuthenticationStateProvider AuthStateProvider
+@inject AuthApiService AuthService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
-@inject ApiClient Api
 
 <div class="auth-container">
     <div class="auth-card animate-scaleIn">
@@ -158,7 +158,6 @@
 
     private async Task LoginConEmail()
     {
-        
         if (bloqueado) return;
 
         errores = LoginTools.ValidarLogin(modelo.Email, modelo.Password);
@@ -168,18 +167,11 @@
 
         try
         {
-            var response = await Api.Http.PostAsJsonAsync(
-                "/api/auth/login-email",
-                new LoginEmailRequest
-                {
-                    Email = modelo.Email,
-                    Password = modelo.Password
-                });
+            var authResponse = await AuthService.LoginEmailAsync(modelo.Email, modelo.Password);
 
-            if (!response.IsSuccessStatusCode)
+            if (authResponse?.Token is null)
             {
                 intentosFallidos++;
-
                 if (intentosFallidos >= MaxIntentos)
                 {
                     bloqueado = true;
@@ -192,28 +184,15 @@
                 return;
             }
 
-            var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-
-            if (authResponse?.Token is null)
-            {
-                resultado = UiResult.ConError("Respuesta inválida del servidor.");
-                return;
-            }
-
             intentosFallidos = 0;
-
             await JS.InvokeVoidAsync("localStorage.setItem", AuthConstants.JwtKey, authResponse.Token);
-
             var provider = AuthStateProvider as JwtAuthStateProvider;
             provider?.EstablecerToken(authResponse.Token);
-
             Navigation.NavigateTo(AppRouters.Dashboard, forceLoad: true);
-
         }
-        catch (Exception)
+        catch
         {
             intentosFallidos++;
-
             if (intentosFallidos >= MaxIntentos)
             {
                 bloqueado = true;
