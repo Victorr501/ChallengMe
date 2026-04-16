@@ -6,5 +6,7 @@
   <Project Path="ChallengMe.Models/ChallengMe.Models.csproj" />
   <Project Path="ChallengMe.Repositories/ChallengMe.Repositories.csproj" />
   <Project Path="ChallengMe.Services/ChallengMe.Services.csproj" />
+  <Project Path="ChallengMe.Test.Functions/ChallengMe.Test.Functions.csproj" Id="a4281773-b0d7-4fa8-beae-348fa95b8f56" />
+  <Project Path="ChallengMe.Tests.API/ChallengMe.Tests.API.csproj" Id="c651dd5c-7dd1-4b42-856c-296e54373fd2" />
   <Project Path="ChallengMe.Web/ChallengMe.Web.csproj" />
 </Solution>

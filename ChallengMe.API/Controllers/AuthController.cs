@@ -22,6 +22,9 @@ namespace ChallengMe.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("login-microsoft")]
+        [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]  // TokenMicrosoftInvalidoException
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> LoginMicrosoft([FromBody] TokenMicrosoftRequest request)
         {
             var token = await _authService.LogingMicrosoftAsync(request.Code);
@@ -31,6 +34,10 @@ namespace ChallengMe.API.Controllers
         [AllowAnonymous]
         [HttpPost("login-email")]
         [EnableRateLimiting("login")]
+        [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]  // CredencialesInvalidasException
+        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> LoginEmail([FromBody] LoginEmailRequest request)
         {
             var token = await _authService.LoginEmailAsync(request.Email, request.Password);
@@ -40,6 +47,10 @@ namespace ChallengMe.API.Controllers
         [AllowAnonymous]
         [HttpPost("registro")]
         [EnableRateLimiting("registro")]
+        [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]      // EmailYaExisteException
+        [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Registro([FromBody] RegistroRequest request)
         {
             var token = await _authService.RegistroEmailAsync(
@@ -52,6 +63,8 @@ namespace ChallengMe.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("recuperar-password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status501NotImplemented)]
         public async Task<IActionResult> RecuperarPassword([FromBody] RecuperarPasswordRequest request)
         {
             // TODO: Implementar RecuperarPasswordAsync en AuthService
