@@ -1,6 +1,6 @@
-﻿namespace ChallengMe.Web.Models.Login
+﻿namespace ChallengMe.Web.Models.Auth
 {
-    public class LoginShipment
+    public class LoginEmail
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;

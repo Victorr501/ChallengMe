@@ -1,4 +1,4 @@
-﻿namespace ChallengMe.Web.Models.Login
+﻿namespace ChallengMe.Web.Models.Auth
 {
     public class LoginEmailRequest
     {

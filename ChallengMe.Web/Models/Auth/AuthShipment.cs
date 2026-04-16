@@ -1,7 +1,13 @@
-﻿namespace ChallengMe.Web.Models.Auth
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ChallengMe.Web.Models.Auth
 {
     public class AuthShipment
     {
-        public string Code { get; set; } = string.Empty;
+        public string Token { get; set; } = string.Empty;
     }
 }

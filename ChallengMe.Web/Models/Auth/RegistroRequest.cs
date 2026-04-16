@@ -1,4 +1,4 @@
-﻿namespace ChallengMe.Web.Models.Registrar
+﻿namespace ChallengMe.Web.Models.Auth
 {
     public class RegistroRequest
     {

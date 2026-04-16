@@ -1,6 +1,6 @@
-﻿namespace ChallengMe.Web.Models.Registrar
+﻿namespace ChallengMe.Web.Models.Auth
 {
-    public class RegistShipment
+    public class Registro
     {
         public string NombreUsuario { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;

@@ -1,6 +1,4 @@
 ﻿using ChallengMe.Web.Models.Auth;
-using ChallengMe.Web.Models.Login;
-using ChallengMe.Web.Models.Registrar;
 
 namespace ChallengMe.Web.Services
 {
@@ -13,7 +11,7 @@ namespace ChallengMe.Web.Services
             _http = http;
         }
 
-        public async Task<AuthResponse?> LoginEmailAsync(string email, string password)
+        public async Task<AuthShipment?> LoginEmailAsync(string email, string password)
         {
             var response = await _http.PostAsJsonAsync(
                 "/api/auth/login-email",
@@ -26,10 +24,10 @@ namespace ChallengMe.Web.Services
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<AuthResponse>();
+            return await response.Content.ReadFromJsonAsync<AuthShipment>();
         }
 
-        public async Task<AuthResponse?> RegistroEmailAsync(
+        public async Task<AuthShipment?> RegistroEmailAsync(
             string email, string password, string nombreUsuario)
         {
             var response = await _http.PostAsJsonAsync(
@@ -44,19 +42,19 @@ namespace ChallengMe.Web.Services
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<AuthResponse>();
+            return await response.Content.ReadFromJsonAsync<AuthShipment>();
         }
 
-        public async Task<AuthResponse?> LoginMicrosoftAsync(string code)
+        public async Task<AuthShipment?> LoginMicrosoftAsync(string code)
         {
             var response = await _http.PostAsJsonAsync(
                 "/api/auth/login-microsoft",
-                new AuthShipment { Code = code });
+                new AuthMicrosoftShipment { Code = code });
 
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            return await response.Content.ReadFromJsonAsync<AuthResponse>();
+            return await response.Content.ReadFromJsonAsync<AuthShipment>();
         }
     }
 }
