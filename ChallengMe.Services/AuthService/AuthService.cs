@@ -55,6 +55,10 @@ namespace ChallengMe.Services.AuthService
                 var token = _jwtService.GenerarToken(usuario.Id, usuario.Email, usuario.NombreUsuario);
                 return token;
             }
+            catch (ChallengeMeException)
+            {
+                throw;  
+            }
             catch (Exception ex) 
             {
                 _logger.LogWarning("Error en el servidor");
@@ -89,6 +93,10 @@ namespace ChallengMe.Services.AuthService
 
                 var token = _jwtService.GenerarToken(usuario.Id, usuario.Email, usuario.NombreUsuario);
                 return token;
+            }
+            catch (ChallengeMeException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
