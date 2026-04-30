@@ -1,4 +1,5 @@
-﻿using ChallengMe.Web.Models.Auth.Shipment;
+﻿using ChallengMe.Web.Models.Auth.Request;
+using ChallengMe.Web.Models.Auth.Shipment;
 
 namespace ChallengMe.Web.Services
 {
