@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text;
 
-namespace ChallengMe.Tests.API.Helpers
+namespace ChallengMe.Tests.API.Helpers.Unit
 {
     public class FakeHttpMessageHandler : HttpMessageHandler
     {

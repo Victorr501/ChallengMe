@@ -1,4 +1,5 @@
 ﻿using ChallengMe.Models.Auth.DTOs;
+using ChallengMe.Models.Auth.Response;
 using ChallengMe.Services.AuthService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;

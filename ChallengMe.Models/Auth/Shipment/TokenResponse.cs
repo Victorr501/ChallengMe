@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace ChallengMe.Models.Auth
+namespace ChallengMe.Models.Auth.Response
 {
     public class TokenResponse
     {

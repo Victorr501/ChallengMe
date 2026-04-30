@@ -4,10 +4,10 @@ using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using ChallengMe.Models.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using static System.Net.WebRequestMethods;
 using System.Net.Http.Json;
+using ChallengMe.Models.Auth.Response;
 
 namespace ChallengMe.AzureAD.AzureAd
 {

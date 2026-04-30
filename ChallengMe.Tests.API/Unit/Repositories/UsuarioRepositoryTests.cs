@@ -1,6 +1,6 @@
 ﻿using ChallengMe.Models.Usuario;
 using ChallengMe.Repositories.UsuarioRepository;
-using ChallengMe.Tests.API.Helpers;
+using ChallengMe.Tests.API.Helpers.Unit;
 using Dapper;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;

@@ -1,5 +1,5 @@
 ﻿using ChallengMe.AzureAD.AzureAd;
-using ChallengMe.Tests.API.Helpers;
+using ChallengMe.Tests.API.Helpers.Unit;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;

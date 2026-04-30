@@ -1,7 +1,7 @@
 ﻿using ChallengMe.Repositories.DbConnectionFactory;
 using System.Data;
 
-namespace ChallengMe.Tests.API.Helpers
+namespace ChallengMe.Tests.API.Helpers.Unit
 {
     public class FakeDbConnectionFactory : IDbConnectionFactory
     {

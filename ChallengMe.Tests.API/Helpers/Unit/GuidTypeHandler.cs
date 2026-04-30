@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using System.Data;
 
-namespace ChallengMe.Tests.API.Helpers
+namespace ChallengMe.Tests.API.Helpers.Unit
 {
     public class GuidTypeHandler : SqlMapper.TypeHandler<Guid>
     {

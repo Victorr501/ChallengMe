@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChallengMe.Models.Auth.DTOs
+namespace ChallengMe.Web.Models.Auth.Shipment
 {
-    public class AuthResponse
+    public class AuthShipment
     {
         public string Token { get; set; } = string.Empty;
     }
