@@ -42,7 +42,7 @@
 
   <ItemGroup>
     <Folder Include="Integration\" />
-    <Folder Include="Unit\ExternalAcreditacion\" />
+    <Folder Include="Unit\GeminiServices\" />
   </ItemGroup>
 
 </Project>

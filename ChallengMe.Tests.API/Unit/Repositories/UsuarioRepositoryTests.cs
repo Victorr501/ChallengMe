@@ -18,6 +18,8 @@ namespace ChallengMe.Tests.API.Unit.Repositories
             _conexion = new SqliteConnection("Data Source=:memory:");
             _conexion.Open();
 
+            SqlMapper.AddTypeHandler(new GuidTypeHandler());
+
             _conexion.Execute("""
                 CREATE TABLE Usuarios (
                     Id                TEXT     NOT NULL PRIMARY KEY,
@@ -71,9 +73,7 @@ namespace ChallengMe.Tests.API.Unit.Repositories
 
             await _sut.CrearAsync(usuario);
 
-            var guardado = await _conexion.QueryFirstOrDefaultAsync<Usuario>(
-                "SELECT * FROM Usuarios WHERE Id = @Id",
-                new { Id = usuario.Id.ToString() });
+            var guardado = await _sut.ObtenerPorIdAsync(usuario.Id);
 
             guardado.Should().NotBeNull();
             guardado!.Email.Should().Be(usuario.Email);
