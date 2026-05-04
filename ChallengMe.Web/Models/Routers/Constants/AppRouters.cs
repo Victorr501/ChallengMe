@@ -1,4 +1,4 @@
-﻿namespace ChallengMe.Web.Constants
+﻿namespace ChallengMe.Web.Models.Routers.Constants
 {
     public static class AppRouters
     {

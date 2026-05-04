@@ -1,4 +1,5 @@
-﻿using ChallengMe.Web.Models.Auth;
+﻿using ChallengMe.Web.Models.API;
+using ChallengMe.Web.Models.Auth;
 
 namespace ChallengMe.Web.Services
 {

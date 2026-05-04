@@ -1,4 +1,4 @@
-﻿namespace ChallengMe.Web.Services
+﻿namespace ChallengMe.Web.Models.API
 {
     public class TokenStore
     {

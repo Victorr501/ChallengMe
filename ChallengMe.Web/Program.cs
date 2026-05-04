@@ -1,5 +1,6 @@
 using ChallengMe.Web.Components;
 using ChallengMe.Web.Extensions;
+using ChallengMe.Web.Models.API;
 using ChallengMe.Web.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 

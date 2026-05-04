@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Components\Shared\" />
-    <Folder Include="Constants\" />
   </ItemGroup>
 
   <ItemGroup>
