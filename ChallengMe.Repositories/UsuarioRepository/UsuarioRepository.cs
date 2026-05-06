@@ -22,7 +22,8 @@ namespace ChallengMe.Repositories.UsuarioRepository
             const string sql = """
                 SELECT Id, Email, PasswordHash, NombreUsuario, AvatarUrl,
                        NivelDificultad, PuntosTotal, RachaActual, RachaMaxima,
-                       UltimaActividad, FechaRegistro
+                       UltimaActividad, FechaRegistro,
+                       ProveedorAutenticacion, EmailVerificado
                 FROM Usuarios
                 WHERE Email = @Email
                 """;
@@ -36,7 +37,8 @@ namespace ChallengMe.Repositories.UsuarioRepository
             const string sql = """
                 SELECT Id, Email, PasswordHash, NombreUsuario, AvatarUrl,
                        NivelDificultad, PuntosTotal, RachaActual, RachaMaxima,
-                       UltimaActividad, FechaRegistro
+                       UltimaActividad, FechaRegistro,
+                       ProveedorAutenticacion, EmailVerificado
                 FROM Usuarios
                 WHERE Id = @Id
                 """;
@@ -51,11 +53,13 @@ namespace ChallengMe.Repositories.UsuarioRepository
                 INSERT INTO Usuarios 
                     (Id, Email, PasswordHash, NombreUsuario, AvatarUrl,
                      NivelDificultad, PuntosTotal, RachaActual, RachaMaxima,
-                     UltimaActividad, FechaRegistro)
+                     UltimaActividad, FechaRegistro,
+                     ProveedorAutenticacion, EmailVerificado)
                 VALUES 
                     (@Id, @Email, @PasswordHash, @NombreUsuario, @AvatarUrl,
                      @NivelDificultad, @PuntosTotal, @RachaActual, @RachaMaxima,
-                     @UltimaActividad, @FechaRegistro)
+                     @UltimaActividad, @FechaRegistro,
+                     @ProveedorAutenticacion, @EmailVerificado)
                 """;
             _logger.LogInformation("Crear usuario con id:{id} ", usuario.Id);
             await connection.ExecuteAsync(sql, usuario);

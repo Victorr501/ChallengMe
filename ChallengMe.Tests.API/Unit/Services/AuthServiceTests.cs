@@ -89,13 +89,14 @@ namespace ChallengMe.Tests.API.Unit.Services
         }
 
         [Fact]
-        public async Task LoginEmailAsync_UsuarioMicrosoftSinHash_LanzaCredencialesInvalidasException()
+        public async Task LoginEmailAsync_UsuarioGmailEntraConMicrosoft_LanzaProveedorIncorrectoException()
         {
             var usuario = new Usuario
             {
                 Id = Guid.NewGuid(),
                 Email = "microsoft@test.com",
-                PasswordHash = null
+                PasswordHash = null,
+                ProveedorAutenticacion = "microsoft"
             };
 
             _repoMock
@@ -103,7 +104,7 @@ namespace ChallengMe.Tests.API.Unit.Services
                 .ReturnsAsync(usuario);
 
             await _sut.Invoking(s => s.LoginEmailAsync("microsoft@test.com", "cualquier"))
-                      .Should().ThrowAsync<CredencialesInvalidasException>();
+                      .Should().ThrowAsync<ProveedorIncorrectoException>();
         }
 
         // RegistroEmailAsync
@@ -171,7 +172,8 @@ namespace ChallengMe.Tests.API.Unit.Services
             {
                 Id = Guid.NewGuid(),
                 Email = "existente@microsoft.com",
-                NombreUsuario = "existente"
+                NombreUsuario = "existente",
+                ProveedorAutenticacion = "microsoft"
             };
 
             _azureAdMock

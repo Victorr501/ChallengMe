@@ -22,17 +22,19 @@ namespace ChallengMe.Tests.API.Unit.Repositories
 
             _conexion.Execute("""
                 CREATE TABLE Usuarios (
-                    Id                TEXT     NOT NULL PRIMARY KEY,
-                    Email             TEXT     NOT NULL UNIQUE,
-                    PasswordHash      TEXT     NULL,
-                    NombreUsuario     TEXT     NOT NULL,
-                    AvatarUrl         TEXT     NULL,
-                    NivelDificultad   INTEGER  NOT NULL DEFAULT 1,
-                    PuntosTotal       INTEGER  NOT NULL DEFAULT 0,
-                    RachaActual       INTEGER  NOT NULL DEFAULT 0,
-                    RachaMaxima       INTEGER  NOT NULL DEFAULT 0,
-                    UltimaActividad   TEXT     NULL,
-                    FechaRegistro     TEXT     NOT NULL
+                    Id                      TEXT     NOT NULL PRIMARY KEY,
+                    Email                   TEXT     NOT NULL UNIQUE,
+                    PasswordHash            TEXT     NULL,
+                    NombreUsuario           TEXT     NOT NULL,
+                    AvatarUrl               TEXT     NULL,
+                    NivelDificultad         INTEGER  NOT NULL DEFAULT 1,
+                    PuntosTotal             INTEGER  NOT NULL DEFAULT 0,
+                    RachaActual             INTEGER  NOT NULL DEFAULT 0,
+                    RachaMaxima             INTEGER  NOT NULL DEFAULT 0,
+                    UltimaActividad         TEXT     NULL,
+                    FechaRegistro           TEXT     NOT NULL,
+                    ProveedorAutenticacion  TEXT     NOT NULL DEFAULT 'email',
+                    EmailVerificado         INTEGER  NOT NULL DEFAULT 1
                 )
                 """);
 
@@ -52,7 +54,9 @@ namespace ChallengMe.Tests.API.Unit.Repositories
         private Usuario CrearUsuarioPrueba(
             string email = "test@test.com",
             string nombreUsuario = "TestUser",
-            string? passwordHash = "hash_de_prueba")
+            string? passwordHash = "hash_de_prueba",
+            string proveedorAutenticacion = "email",
+            bool emailVerificado = true)
         {
             return new Usuario
             {
@@ -60,7 +64,9 @@ namespace ChallengMe.Tests.API.Unit.Repositories
                 Email = email,
                 NombreUsuario = nombreUsuario,
                 PasswordHash = passwordHash,
-                FechaRegistro = DateTime.UtcNow
+                FechaRegistro = DateTime.UtcNow,
+                ProveedorAutenticacion = proveedorAutenticacion,
+                EmailVerificado = emailVerificado
             };
         }
 

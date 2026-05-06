@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ChallengMe.AzureAD\ChallengMe.ExternalAutentication.csproj" />
+    <ProjectReference Include="..\ChallengMe.EmailSevices\ChallengMe.EmailSevices.csproj" />
     <ProjectReference Include="..\ChallengMe.GeminiServices\ChallengMe.GeminiServices.csproj" />
     <ProjectReference Include="..\ChallengMe.Models\ChallengMe.Models.csproj" />
     <ProjectReference Include="..\ChallengMe.Repositories\ChallengMe.Repositories.csproj" />

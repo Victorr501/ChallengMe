@@ -45,10 +45,17 @@ namespace ChallengMe.Services.AuthService
                         Email = email,
                         NombreUsuario = email.Split('@')[0],
                         PasswordHash = null,
-                        FechaRegistro = DateTime.UtcNow
+                        FechaRegistro = DateTime.UtcNow,
+                        ProveedorAutenticacion = "microsoft",
+                        EmailVerificado = true
                     };
                     await _usuarioRepository.CrearAsync(usuario);
                     // Aqui hay que añadir un metodo para actualizar el id si coincide de nuevo
+                }
+                else if (usuario.ProveedorAutenticacion != "microsoft")
+                {
+                    _logger.LogWarning("El email {email} ya esta registrado con otro proveedor de autenticacion", email);
+                    throw new ProveedorIncorrectoException("email");
                 }
 
 
@@ -85,7 +92,9 @@ namespace ChallengMe.Services.AuthService
                     Email = email,
                     NombreUsuario = nombreUsuario,
                     PasswordHash = passwordHash,
-                    FechaRegistro = DateTime.UtcNow
+                    FechaRegistro = DateTime.UtcNow,
+                    ProveedorAutenticacion = "email",
+                    EmailVerificado = true
                 };
 
                 _logger.LogInformation("Creando nuevo usuario con email: {email}", email);
@@ -109,11 +118,27 @@ namespace ChallengMe.Services.AuthService
         {
             var usuario = await _usuarioRepository.ObtenerPorEmailAsync(email);
 
-            if (usuario is null || usuario.PasswordHash is null)
+            if (usuario is null)
             {
                 _logger.LogWarning("Credenciales invalidas para email: {email}", email);
                 throw new CredencialesInvalidasException();
             }
+
+            if (usuario.ProveedorAutenticacion != "email")
+            {
+                _logger.LogWarning("El email {email} esta registrado con otro proveedor de autenticacion", email);
+                throw new ProveedorIncorrectoException("microsoft");
+            }
+
+            
+            if (usuario.PasswordHash == null)
+            {
+                _logger.LogWarning("Credenciales invalidas para email: {email}", email);
+                throw new CredencialesInvalidasException();
+            }
+
+
+            
                 
 
             var passwordCorrecta = BCrypt.Net.BCrypt.Verify(password, usuario.PasswordHash);

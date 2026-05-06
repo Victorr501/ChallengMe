@@ -19,5 +19,7 @@ namespace ChallengMe.Models.Usuario
         public int RachaMaxima { get; set; } = 0;
         public DateTime? UltimaActividad { get; set; }
         public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
+        public string ProveedorAutenticacion { get; set; } = "email";
+        public bool EmailVerificado { get; set; }
     }
 }
