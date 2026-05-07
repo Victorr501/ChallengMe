@@ -1,10 +1,13 @@
 ﻿using ChallengMe.AzureAD.AzureAd;
+using ChallengMe.EmailServices.EmailServices;
+using ChallengMe.Models.TokenResetPassword;
+using ChallengMe.Models.Usuario;
+using ChallengMe.Repositories.TokenResetPasswordRepository;
+using ChallengMe.Repositories.UsuarioRepository;
+using ChallengMe.Services.Exceptions;
+using ChallengMe.Services.Exceptions.GenericExcepcions.Auth;
 using ChallengMe.Services.JwtService;
 using Microsoft.Extensions.Logging;
-using ChallengMe.Models.Usuario;
-using ChallengMe.Repositories.UsuarioRepository;
-using ChallengMe.Services.Exceptions.GenericExcepcions.Auth;
-using ChallengMe.Services.Exceptions;
 
 namespace ChallengMe.Services.AuthService
 {
@@ -12,16 +15,20 @@ namespace ChallengMe.Services.AuthService
     {
 
         private readonly IAzureAdService _azureAdService;
-        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IEmailService _emailService;
         private readonly IJwtService _jwtService;
+        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly ITokenResetPasswordRepository _tokenResetPasswordRepository;
         private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IAzureAdService azureAdService, IJwtService jwtService, ILogger<AuthService> logger, IUsuarioRepository usuarioRepository )
+        public AuthService(IAzureAdService azureAdService, IJwtService jwtService, ILogger<AuthService> logger, IUsuarioRepository usuarioRepository, ITokenResetPasswordRepository tokenResetPasswordRepository, IEmailService emailService)
         {
             _azureAdService = azureAdService;
             _jwtService = jwtService;
-            _logger = logger;
+            _emailService = emailService;
             _usuarioRepository = usuarioRepository;
+            _tokenResetPasswordRepository = tokenResetPasswordRepository;
+            _logger = logger;
         }
 
         public async Task<String> LogingMicrosoftAsync(string tokenMicrosoft)
@@ -151,6 +158,80 @@ namespace ChallengMe.Services.AuthService
 
             var token = _jwtService.GenerarToken(usuario.Id, usuario.Email, usuario.NombreUsuario);
             return token;
+        }
+
+        public async Task SolicitarResetPasswordAsync(string email)
+        {
+            try
+            {
+                var usuario = await _usuarioRepository.ObtenerPorEmailAsync(email);
+
+                if (usuario is null || usuario.ProveedorAutenticacion != "email")
+                {
+                    _logger.LogWarning("Solicitud de reset para email no válido: {email}", email);
+                    return;
+                }
+
+                var tokenReset = new TokenResetPassword
+                {
+                    Id = Guid.NewGuid(),
+                    UsuarioId = usuario.Id,
+                    Token = Guid.NewGuid().ToString("N"),
+                    Expiracion = DateTime.UtcNow.AddHours(1),
+                    Usado = false,
+                    FechaCreacion = DateTime.UtcNow
+                };
+
+                await _tokenResetPasswordRepository.CrearAsync(tokenReset);
+                await _emailService.EnviarResetPasswordAsync(usuario.Email, usuario.NombreUsuario, tokenReset.Token);
+
+                _logger.LogInformation("Token de reset enviado a: {email}", email);
+            }
+            catch (ChallengeMeException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al solicitar reset de password para: {email}", email);
+                throw new ChallengeMeException("Error en el servidor", 500);
+            }
+        }
+
+        public async Task ResetPasswordAsync(string token, string nuevaPassword)
+        {
+            try
+            {
+                var tokenReset = await _tokenResetPasswordRepository.ObtenerPorTokenAsync(token);
+
+                if (tokenReset is null || tokenReset.Usado)
+                    throw new TokenResetInvalidoException();
+
+                if (tokenReset.Expiracion < DateTime.UtcNow)
+                    throw new TokenResetExpiradoException();
+
+                var usuario = await _usuarioRepository.ObtenerPorIdAsync(tokenReset.UsuarioId);
+                if (usuario is null)
+                    throw new TokenResetInvalidoException();
+
+                if (usuario.ProveedorAutenticacion != "email")
+                    throw new ProveedorNoPermitePasswordException();
+
+                usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(nuevaPassword);
+                await _usuarioRepository.ActualizarPasswordAsync(usuario.Id, usuario.PasswordHash);
+                await _tokenResetPasswordRepository.MarcarComoUsadoAsync(tokenReset.Id);
+
+                _logger.LogInformation("Password reseteado para usuario: {usuarioId}", usuario.Id);
+            }
+            catch (ChallengeMeException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al resetear password con token: {token}", token);
+                throw new ChallengeMeException("Error en el servidor", 500);
+            }
         }
     }
 }

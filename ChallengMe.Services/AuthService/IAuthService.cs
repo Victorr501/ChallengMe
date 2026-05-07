@@ -11,5 +11,7 @@ namespace ChallengMe.Services.AuthService
         Task<String> LogingMicrosoftAsync(string tokenMicrosoft);
         Task<String> RegistroEmailAsync(string email, string password, string nombreUsuario);
         Task<String> LoginEmailAsync(string email, string password);
+        Task SolicitarResetPasswordAsync(string email);
+        Task ResetPasswordAsync(string token, string nuevaPassword);
     }
 }

@@ -83,5 +83,17 @@ namespace ChallengMe.Repositories.UsuarioRepository
             await connection.ExecuteAsync(sql, usuario);
         }
 
+        public async Task ActualizarPasswordAsync(Guid usuarioId, string nuevoPasswordHash)
+        {
+            using var connection = _dbConnectionFactory.CrearConexion();
+            const string sql = """
+                UPDATE Usuarios SET
+                    PasswordHash = @PasswordHash
+                WHERE Id = @Id
+                """;
+            _logger.LogInformation("Actualizando password del usuario con id: {id}", usuarioId);
+            await connection.ExecuteAsync(sql, new { Id = usuarioId, PasswordHash = nuevoPasswordHash });
+        }
+
     }
 }

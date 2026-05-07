@@ -8,5 +8,6 @@ namespace ChallengMe.Repositories.UsuarioRepository
         Task<Usuario?> ObtenerPorIdAsync(Guid id);
         Task CrearAsync(Usuario usuario);
         Task ActualizarAsync(Usuario usuario);
+        Task ActualizarPasswordAsync(Guid usuarioId, string nuevoPasswordHash);
     }
 }

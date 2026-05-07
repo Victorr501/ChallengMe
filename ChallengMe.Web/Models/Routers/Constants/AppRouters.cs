@@ -6,6 +6,7 @@
         public const string Login = "/login";
         public const string Registro = "/registro";
         public const string RecuperarPassword = "/recuperar-password";
+        public const string ResetPassword = "/reset-password";
 
         // App privada
         public const string Dashboard = "/";

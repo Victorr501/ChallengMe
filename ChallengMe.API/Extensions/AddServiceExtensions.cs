@@ -1,4 +1,5 @@
 ﻿using ChallengMe.AzureAD.AzureAd;
+using ChallengMe.EmailServices.EmailServices;
 using ChallengMe.Services.AuthService;
 using ChallengMe.Services.JwtService;
 
@@ -13,6 +14,10 @@ namespace ChallengMe.API.Extensions
 
             //Servidor de AzureAd
             services.AddHttpClient<IAzureAdService, AzureAdService>();
+
+            // Servidor de envio de email
+            services.AddScoped<IEmailService, EmailService>();
+
 
             //Servers
             services.AddScoped<IAuthService, AuthService>();

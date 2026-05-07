@@ -7,8 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddServiceExtenions();
-builder.Services.AddControllerExtenions();
+builder.Services.AddRepositoryExtensions();
 builder.Services.AddAuthServices(builder.Configuration);
+builder.Services.AddConfigurationExtension(builder.Configuration);
 builder.Services.AddSwaggerWithAuth();
 builder.Services.AddRateLimitExtensions();
 

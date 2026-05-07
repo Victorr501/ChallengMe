@@ -57,5 +57,21 @@ namespace ChallengMe.Web.Services
 
             return await response.Content.ReadFromJsonAsync<AuthShipment>();
         }
+
+        public async Task RecuperarPasswordAsync(string email)
+        {
+            await _http.PostAsJsonAsync(
+                "/api/auth/recuperar-password",
+                new { Email = email });
+        }
+
+        public async Task<bool> ResetPasswordAsync(string token, string nuevaPassword)
+        {
+            var response = await _http.PostAsJsonAsync(
+                "/api/auth/reset-password",
+                new { Token = token, NuevaPassword = nuevaPassword });
+
+            return response.IsSuccessStatusCode;
+        }
     }
 }

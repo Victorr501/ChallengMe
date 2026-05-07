@@ -2,7 +2,6 @@
 using ChallengMe.Models.Auth.Response;
 using ChallengMe.Services.AuthService;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -24,7 +23,7 @@ namespace ChallengMe.API.Controllers
         [AllowAnonymous]
         [HttpPost("login-microsoft")]
         [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]  // TokenMicrosoftInvalidoException
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> LoginMicrosoft([FromBody] TokenMicrosoftRequest request)
         {
@@ -36,7 +35,7 @@ namespace ChallengMe.API.Controllers
         [HttpPost("login-email")]
         [EnableRateLimiting("login")]
         [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]  // CredencialesInvalidasException
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> LoginEmail([FromBody] LoginEmailRequest request)
@@ -49,7 +48,7 @@ namespace ChallengMe.API.Controllers
         [HttpPost("registro")]
         [EnableRateLimiting("registro")]
         [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]      // EmailYaExisteException
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Registro([FromBody] RegistroRequest request)
@@ -64,12 +63,25 @@ namespace ChallengMe.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("recuperar-password")]
+        [EnableRateLimiting("recuperar-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status501NotImplemented)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> RecuperarPassword([FromBody] RecuperarPasswordRequest request)
         {
-            // TODO: Implementar RecuperarPasswordAsync en AuthService
-            throw new NotImplementedException();
+            await _authService.SolicitarResetPasswordAsync(request.Email);
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        [EnableRateLimiting("reset-password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            await _authService.ResetPasswordAsync(request.Token, request.NuevaPassword);
+            return Ok();
         }
     }
 }
