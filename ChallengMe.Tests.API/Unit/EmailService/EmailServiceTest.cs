@@ -1,187 +1,126 @@
-﻿using ChallengMe.Models.TokenResetPassword;
-using ChallengMe.Repositories.TokenResetPasswordRepository;
-using ChallengMe.Tests.API.Helpers.Unit;
-using Dapper;
-using FluentAssertions;
-using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿using ChallengMe.EmailServices.EmailServices;
+using ChallengMe.Models.Auth;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+using System.Net;
+using Xunit;
 
-namespace ChallengMe.Tests.API.Unit.Repositories;
+namespace ChallengMe.Test.API.Unit.EmailServices;
 
-public class TokenResetPasswordRepositoryTests : IDisposable
+public class EmailServiceTests
 {
-    private readonly SqliteConnection _conexion;
-    private readonly TokenResetPasswordRepository _sut;
 
-    public TokenResetPasswordRepositoryTests()
+
+    private readonly Mock<ISendGridClient> _sendGridMock;
+    private readonly Mock<ILogger<EmailService>> _loggerMock;
+    private readonly EmailService _sut;  
+
+    public EmailServiceTests()
     {
-        _conexion = new SqliteConnection("Data Source=:memory:");
-        _conexion.Open();
+        _sendGridMock = new Mock<ISendGridClient>();
+        _loggerMock = new Mock<ILogger<EmailService>>();
 
-        SqlMapper.AddTypeHandler(new GuidTypeHandler());
-
-        _conexion.Execute("""
-            CREATE TABLE TokensResetPassword (
-                Id            TEXT     NOT NULL PRIMARY KEY,
-                UsuarioId     TEXT     NOT NULL,
-                Token         TEXT     NOT NULL,
-                Expiracion    TEXT     NOT NULL,
-                Usado         INTEGER  NOT NULL DEFAULT 0,
-                FechaCreacion TEXT     NOT NULL
-            )
-            """);
-
-        var factory = new FakeDbConnectionFactory(_conexion);
-        _sut = new TokenResetPasswordRepository(factory, NullLogger<TokenResetPasswordRepository>.Instance);
-    }
-
-    public void Dispose()
-    {
-        _conexion.Close();
-        _conexion.Dispose();
-    }
-
-    private TokenResetPassword CrearTokenPrueba(
-        Guid? usuarioId = null,
-        string? token = null,
-        DateTime? expiracion = null,
-        bool usado = false)
-    {
-        return new TokenResetPassword
+        var options = Options.Create(new SendGridOptions
         {
-            Id = Guid.NewGuid(),
-            UsuarioId = usuarioId ?? Guid.NewGuid(),
-            Token = token ?? Guid.NewGuid().ToString("N"),
-            Expiracion = expiracion ?? DateTime.UtcNow.AddHours(1),
-            Usado = usado,
-            FechaCreacion = DateTime.UtcNow
-        };
+            ApiKey = "fake-api-key",
+            EmailRemitente = "no-reply@challengme.com",
+            NombreRemitente = "ChallengMe!"
+        });
+
+        _sut = new EmailService(options, _loggerMock.Object, _sendGridMock.Object);
     }
 
 
     [Fact]
-    public async Task CrearAsync_TokenValido_SeInsertaConTodosLosCampos()
+    public async Task EnviarResetPasswordAsync_SendGridRespondeOk_LlamaEnviarConDatosCorrectos()
     {
-        var tokenReset = CrearTokenPrueba();
 
-        await _sut.CrearAsync(tokenReset);
-
-        var guardado = await _sut.ObtenerPorTokenAsync(tokenReset.Token);
-
-        guardado.Should().NotBeNull();
-        guardado!.Id.Should().Be(tokenReset.Id);
-        guardado.UsuarioId.Should().Be(tokenReset.UsuarioId);
-        guardado.Token.Should().Be(tokenReset.Token);
-        guardado.Usado.Should().BeFalse();
-        guardado.FechaCreacion.Should().BeCloseTo(tokenReset.FechaCreacion, precision: TimeSpan.FromSeconds(1));
-    }
+        var respuestaFake = new Response(HttpStatusCode.Accepted, null, null);
+        _sendGridMock
+            .Setup(c => c.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(respuestaFake);
 
 
-    [Fact]
-    public async Task ObtenerPorTokenAsync_TokenExiste_DevuelveTokenCompleto()
-    {
-        var tokenReset = CrearTokenPrueba();
-        await _sut.CrearAsync(tokenReset);
+        await _sut.EnviarResetPasswordAsync("victor@ejemplo.com", "Victor", "mi-token-123");
 
-        var resultado = await _sut.ObtenerPorTokenAsync(tokenReset.Token);
 
-        resultado.Should().NotBeNull();
-        resultado!.Id.Should().Be(tokenReset.Id);
-        resultado.UsuarioId.Should().Be(tokenReset.UsuarioId);
-        resultado.Token.Should().Be(tokenReset.Token);
-        resultado.Usado.Should().BeFalse();
+        _sendGridMock.Verify(
+            c => c.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
-    public async Task ObtenerPorTokenAsync_TokenInexistente_DevuelveNull()
+    public async Task EnviarResetPasswordAsync_SendGridRespondeOk_LoguearInformacion()
     {
-        var resultado = await _sut.ObtenerPorTokenAsync("token-que-no-existe");
+        var respuestaFake = new Response(HttpStatusCode.Accepted, null, null);
+        _sendGridMock
+            .Setup(c => c.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(respuestaFake);
 
-        resultado.Should().BeNull();
-    }
+        await _sut.EnviarResetPasswordAsync("victor@ejemplo.com", "Victor", "mi-token-123");
 
-
-    [Fact]
-    public async Task MarcarComoUsadoAsync_TokenMarcado_UsadoPasaATrue()
-    {
-        var tokenReset = CrearTokenPrueba(usado: false);
-        await _sut.CrearAsync(tokenReset);
-
-        await _sut.MarcarComoUsadoAsync(tokenReset.Id);
-
-        var actualizado = await _sut.ObtenerPorTokenAsync(tokenReset.Token);
-        actualizado!.Usado.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task MarcarComoUsadoAsync_MarcaUno_OtrosTokensNoAfectados()
-    {
-        var tokenObjetivo = CrearTokenPrueba();
-        var tokenOtro = CrearTokenPrueba();
-        await _sut.CrearAsync(tokenObjetivo);
-        await _sut.CrearAsync(tokenOtro);
-
-        await _sut.MarcarComoUsadoAsync(tokenObjetivo.Id);
-
-        var otroSinCambios = await _sut.ObtenerPorTokenAsync(tokenOtro.Token);
-        otroSinCambios!.Usado.Should().BeFalse();
-    }
-
-
-    [Fact]
-    public async Task EliminarExpiradosAsync_TokenExpirado_SeElimina()
-    {
-        var tokenExpirado = CrearTokenPrueba(expiracion: DateTime.UtcNow.AddHours(-2));
-        await _sut.CrearAsync(tokenExpirado);
-
-        await _sut.EliminarExpiradosAsync();
-
-        var resultado = await _sut.ObtenerPorTokenAsync(tokenExpirado.Token);
-        resultado.Should().BeNull();
+        _loggerMock.Verify(
+            l => l.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("victor@ejemplo.com")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
     }
 
     [Fact]
-    public async Task EliminarExpiradosAsync_TokenUsado_SeElimina()
+    public async Task EnviarResetPasswordAsync_SendGridRespondeError_LoguearError()
     {
-        var tokenUsado = CrearTokenPrueba(usado: true);
-        await _sut.CrearAsync(tokenUsado);
+        var respuestaFake = new Response(HttpStatusCode.InternalServerError, null, null);
+        _sendGridMock
+            .Setup(c => c.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(respuestaFake);
 
-        await _sut.EliminarExpiradosAsync();
+        await _sut.EnviarResetPasswordAsync("victor@ejemplo.com", "Victor", "mi-token-123");
 
-        var resultado = await _sut.ObtenerPorTokenAsync(tokenUsado.Token);
-        resultado.Should().BeNull();
+        _loggerMock.Verify(
+            l => l.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("victor@ejemplo.com")),
+                null,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
     }
 
     [Fact]
-    public async Task EliminarExpiradosAsync_TokenVigenteYNoUsado_NoSeElimina()
+    public async Task EnviarResetPasswordAsync_SendGridLanzaExcepcion_RelanzaLaExcepcion()
     {
-        var tokenVigente = CrearTokenPrueba(expiracion: DateTime.UtcNow.AddHours(1), usado: false);
-        await _sut.CrearAsync(tokenVigente);
+        _sendGridMock
+            .Setup(c => c.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new HttpRequestException("Fallo de red simulado"));
 
-        await _sut.EliminarExpiradosAsync();
-
-        var resultado = await _sut.ObtenerPorTokenAsync(tokenVigente.Token);
-        resultado.Should().NotBeNull();
+        await Assert.ThrowsAsync<HttpRequestException>(
+            () => _sut.EnviarResetPasswordAsync("victor@ejemplo.com", "Victor", "mi-token-123"));
     }
 
     [Fact]
-    public async Task EliminarExpiradosAsync_MixDeTokens_SoloEliminaLosCorrectos()
+    public async Task EnviarResetPasswordAsync_SendGridLanzaExcepcion_LoguearError()
     {
-        // Arrange — tres tipos distintos en la misma base de datos
-        var tokenExpirado = CrearTokenPrueba(expiracion: DateTime.UtcNow.AddHours(-1));
-        var tokenUsado = CrearTokenPrueba(usado: true);
-        var tokenVigente = CrearTokenPrueba(expiracion: DateTime.UtcNow.AddHours(2), usado: false);
+        var excepcion = new HttpRequestException("Fallo de red simulado");
+        _sendGridMock
+            .Setup(c => c.SendEmailAsync(It.IsAny<SendGridMessage>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(excepcion);
 
-        await _sut.CrearAsync(tokenExpirado);
-        await _sut.CrearAsync(tokenUsado);
-        await _sut.CrearAsync(tokenVigente);
+        try { await _sut.EnviarResetPasswordAsync("victor@ejemplo.com", "Victor", "mi-token-123"); }
+        catch { /* esperado */ }
 
-        // Act
-        await _sut.EliminarExpiradosAsync();
-
-        // Assert — solo el vigente sobrevive
-        (await _sut.ObtenerPorTokenAsync(tokenExpirado.Token)).Should().BeNull();
-        (await _sut.ObtenerPorTokenAsync(tokenUsado.Token)).Should().BeNull();
-        (await _sut.ObtenerPorTokenAsync(tokenVigente.Token)).Should().NotBeNull();
+        _loggerMock.Verify(
+            l => l.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("victor@ejemplo.com")),
+                excepcion,
+                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once);
     }
 }

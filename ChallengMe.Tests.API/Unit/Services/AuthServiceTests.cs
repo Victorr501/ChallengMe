@@ -20,7 +20,7 @@ namespace ChallengMe.Tests.API.Unit.Services
         private readonly Mock<IJwtService> _jwtMock = new();
         private readonly Mock<ILogger<AuthService>> _loggerMock = new();
         private readonly Mock<IUsuarioRepository> _repoMock = new();
-        private readonly Mock<ITokenResetPasswordRepository> _tokenResetPasswordRepositoryMock = new(); // ← añadir
+        private readonly Mock<ITokenResetPasswordRepository> _tokenResetPasswordRepositoryMock = new();
         private readonly Mock<IEmailService> _emailServiceMock = new();
         private readonly AuthService _sut;
 
