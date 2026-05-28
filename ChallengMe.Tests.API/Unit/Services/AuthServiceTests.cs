@@ -31,7 +31,7 @@ namespace ChallengMe.Tests.API.Unit.Services
                 _jwtMock.Object,
                 _loggerMock.Object,
                 _repoMock.Object,
-                _tokenResetPasswordRepositoryMock.Object, // ← añadir, mismo orden que el constructor real
+                _tokenResetPasswordRepositoryMock.Object, 
                 _emailServiceMock.Object);
         }
 
