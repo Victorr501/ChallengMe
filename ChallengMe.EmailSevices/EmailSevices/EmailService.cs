@@ -1,10 +1,9 @@
-﻿using ChallengMe.EmailServices.EmailServices;
-using ChallengMe.Models.Auth;
+﻿using ChallengMe.Models.Auth;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using System.Net.Mail;
+
 
 namespace ChallengMe.EmailServices.EmailServices
 {
@@ -12,11 +11,13 @@ namespace ChallengMe.EmailServices.EmailServices
     {
         private readonly SendGridOptions _options;
         private readonly ILogger<EmailService> _logger;
+        private readonly ISendGridClient _sendGridClient;
 
-        public EmailService(IOptions<SendGridOptions> options, ILogger<EmailService> logger)
+        public EmailService(IOptions<SendGridOptions> options, ILogger<EmailService> logger, ISendGridClient sendGridClient)
         {
             _options = options.Value;
             _logger = logger;
+            _sendGridClient = sendGridClient;
         }
 
         public async Task EnviarResetPasswordAsync(string email, string nombreUsuario, string token)
@@ -55,24 +56,17 @@ namespace ChallengMe.EmailServices.EmailServices
         {
             try
             {
-                var client = new SendGridClient(_options.ApiKey);
-
                 var from = new EmailAddress(_options.EmailRemitente, _options.NombreRemitente);
                 var to = new EmailAddress(destinatario);
+                var mensaje = MailHelper.CreateSingleEmail(from, to, asunto, null, cuerpoHtml);
 
-                var mensaje = MailHelper.CreateSingleEmail(from, to, asunto, plainTextContent: null, cuerpoHtml);
-
-                var respuesta = await client.SendEmailAsync(mensaje);
+                var respuesta = await _sendGridClient.SendEmailAsync(mensaje); // ← usa el inyectado
 
                 if (!respuesta.IsSuccessStatusCode)
-                {
                     _logger.LogError("Error al enviar email a {destinatario}. StatusCode: {code}",
                         destinatario, respuesta.StatusCode);
-                }
                 else
-                {
                     _logger.LogInformation("Email enviado correctamente a {destinatario}", destinatario);
-                }
             }
             catch (Exception ex)
             {

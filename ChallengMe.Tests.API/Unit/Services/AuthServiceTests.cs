@@ -1,11 +1,14 @@
 ﻿using ChallengMe.AzureAD.AzureAd;
+using ChallengMe.EmailServices.EmailServices;
 using ChallengMe.Models.Usuario;
+using ChallengMe.Repositories.TokenResetPasswordRepository;
 using ChallengMe.Repositories.UsuarioRepository;
 using ChallengMe.Services.AuthService;
 using ChallengMe.Services.Exceptions;
 using ChallengMe.Services.Exceptions.GenericExcepcions.Auth;
 using ChallengMe.Services.JwtService;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 
@@ -15,9 +18,10 @@ namespace ChallengMe.Tests.API.Unit.Services
     {
         private readonly Mock<IAzureAdService> _azureAdMock = new();
         private readonly Mock<IJwtService> _jwtMock = new();
+        private readonly Mock<ILogger<AuthService>> _loggerMock = new();
         private readonly Mock<IUsuarioRepository> _repoMock = new();
-
-
+        private readonly Mock<ITokenResetPasswordRepository> _tokenResetPasswordRepositoryMock = new(); // ← añadir
+        private readonly Mock<IEmailService> _emailServiceMock = new();
         private readonly AuthService _sut;
 
         public AuthServiceTests()
@@ -25,8 +29,10 @@ namespace ChallengMe.Tests.API.Unit.Services
             _sut = new AuthService(
                 _azureAdMock.Object,
                 _jwtMock.Object,
-                NullLogger<AuthService>.Instance,
-                _repoMock.Object);
+                _loggerMock.Object,
+                _repoMock.Object,
+                _tokenResetPasswordRepositoryMock.Object, // ← añadir, mismo orden que el constructor real
+                _emailServiceMock.Object);
         }
 
         //LoginEmailAsync

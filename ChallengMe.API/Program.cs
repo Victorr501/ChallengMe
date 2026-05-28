@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddServiceExtenions();
+builder.Services.AddServiceExtenions(builder.Configuration);
 builder.Services.AddRepositoryExtensions();
 builder.Services.AddAuthServices(builder.Configuration);
 builder.Services.AddConfigurationExtension(builder.Configuration);
@@ -27,7 +27,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
-app.UseRateLimitExtensions();
+app.UseConditionalMiddleware();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
