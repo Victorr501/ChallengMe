@@ -3,9 +3,6 @@ using ChallengMe.Services.AuthService;
 using ChallengMe.Services.Exceptions.GenericExcepcions.Auth;
 using ChallengMe.Tests.API.Helpers;
 using FluentAssertions;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System.Net;
 using System.Net.Http.Json;
@@ -23,22 +20,19 @@ namespace ChallengMe.Tests.API.Integration.Controllers
             _client = factory.CreateClient();
         }
 
-        // LOGIN EMAIL
+        // ── LOGIN EMAIL ─────────────────────────────────────────────
 
         [Fact]
         public async Task LoginEmail_CredencialesCorrectas_Devuelve200ConToken()
         {
-
             _authServiceMock
                 .Setup(s => s.LoginEmailAsync("test@test.com", "Password123"))
                 .ReturnsAsync("token_valido");
 
-            var request = new { email = "test@test.com", password = "Password123" };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/login-email", request);
+            var response = await _client.PostAsJsonAsync("/api/auth/login-email",
+                new { email = "test@test.com", password = "Password123" });
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-
             var body = await response.Content.ReadFromJsonAsync<AuthResponse>();
             body!.Token.Should().Be("token_valido");
         }
@@ -50,9 +44,8 @@ namespace ChallengMe.Tests.API.Integration.Controllers
                 .Setup(s => s.LoginEmailAsync("mal@test.com", "PasswordMal"))
                 .ThrowsAsync(new CredencialesInvalidasException());
 
-            var request = new { email = "mal@test.com", password = "PasswordMal" };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/login-email", request);
+            var response = await _client.PostAsJsonAsync("/api/auth/login-email",
+                new { email = "mal@test.com", password = "PasswordMal" });
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -60,14 +53,12 @@ namespace ChallengMe.Tests.API.Integration.Controllers
         [Fact]
         public async Task LoginEmail_BodyVacio_Devuelve400()
         {
-            var request = new { };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/login-email", request);
+            var response = await _client.PostAsJsonAsync("/api/auth/login-email", new { });
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
-        // REGISTRO
+        // ── REGISTRO ────────────────────────────────────────────────
 
         [Fact]
         public async Task Registro_DatosNuevos_Devuelve201ConToken()
@@ -76,17 +67,14 @@ namespace ChallengMe.Tests.API.Integration.Controllers
                 .Setup(s => s.RegistroEmailAsync("nuevo@test.com", "Pass123", "NuevoUser"))
                 .ReturnsAsync("token_registro");
 
-            var request = new
+            var response = await _client.PostAsJsonAsync("/api/auth/registro", new
             {
                 email = "nuevo@test.com",
                 password = "Pass123",
                 nombreUsuario = "NuevoUser"
-            };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/registro", request);
+            });
 
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-
             var body = await response.Content.ReadFromJsonAsync<AuthResponse>();
             body!.Token.Should().Be("token_registro");
         }
@@ -98,19 +86,17 @@ namespace ChallengMe.Tests.API.Integration.Controllers
                 .Setup(s => s.RegistroEmailAsync("duplicado@test.com", "Pass123", "User"))
                 .ThrowsAsync(new EmailYaExisteException("duplicado@test.com"));
 
-            var request = new
+            var response = await _client.PostAsJsonAsync("/api/auth/registro", new
             {
                 email = "duplicado@test.com",
                 password = "Pass123",
                 nombreUsuario = "User"
-            };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/registro", request);
+            });
 
             response.StatusCode.Should().Be(HttpStatusCode.Conflict);
         }
 
-        // LOGIN MICROSOFT
+        // ── LOGIN MICROSOFT ─────────────────────────────────────────
 
         [Fact]
         public async Task LoginMicrosoft_TokenValido_Devuelve200ConToken()
@@ -119,12 +105,10 @@ namespace ChallengMe.Tests.API.Integration.Controllers
                 .Setup(s => s.LogingMicrosoftAsync("code_valido"))
                 .ReturnsAsync("token_microsoft");
 
-            var request = new { code = "code_valido" };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/login-microsoft", request);
+            var response = await _client.PostAsJsonAsync("/api/auth/login-microsoft",
+                new { code = "code_valido" });
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-
             var body = await response.Content.ReadFromJsonAsync<AuthResponse>();
             body!.Token.Should().Be("token_microsoft");
         }
@@ -136,9 +120,79 @@ namespace ChallengMe.Tests.API.Integration.Controllers
                 .Setup(s => s.LogingMicrosoftAsync("code_invalido"))
                 .ThrowsAsync(new TokenMicrosoftInvalidoException());
 
-            var request = new { code = "code_invalido" };
+            var response = await _client.PostAsJsonAsync("/api/auth/login-microsoft",
+                new { code = "code_invalido" });
 
-            var response = await _client.PostAsJsonAsync("/api/auth/login-microsoft", request);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        // ── RECUPERAR PASSWORD ──────────────────────────────────────
+
+        [Fact]
+        public async Task SolicitarReset_EmailValido_Devuelve200()
+        {
+            _authServiceMock
+                .Setup(s => s.SolicitarResetPasswordAsync("victor@test.com"))
+                .Returns(Task.CompletedTask);
+
+            var response = await _client.PostAsJsonAsync("/api/auth/recuperar-password",
+                new { email = "victor@test.com" });
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task SolicitarReset_EmailNoRegistrado_Devuelve200IgualQueValido()
+        {
+            // Seguridad por oscuridad: el cliente nunca sabe si el email existe o no
+            _authServiceMock
+                .Setup(s => s.SolicitarResetPasswordAsync("noexiste@test.com"))
+                .Returns(Task.CompletedTask);
+
+            var response = await _client.PostAsJsonAsync("/api/auth/recuperar-password",
+                new { email = "noexiste@test.com" });
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+        
+
+        // ── RESET PASSWORD ──────────────────────────────────────────
+
+        [Fact]
+        public async Task ResetPassword_TokenValido_Devuelve200()
+        {
+            _authServiceMock
+                .Setup(s => s.ResetPasswordAsync("token-valido", "NuevoPass123"))
+                .Returns(Task.CompletedTask);
+
+            var response = await _client.PostAsJsonAsync("/api/auth/reset-password",
+                new { token = "token-valido", nuevaPassword = "NuevoPass123" });
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task ResetPassword_TokenNoReutilizable_Devuelve401()
+        {
+            _authServiceMock
+                .Setup(s => s.ResetPasswordAsync("token-ya-usado", "NuevoPass123"))
+                .ThrowsAsync(new TokenResetInvalidoException());
+
+            var response = await _client.PostAsJsonAsync("/api/auth/reset-password",
+                new { token = "token-ya-usado", nuevaPassword = "NuevoPass123" });
+
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task ResetPassword_TokenExpirado_Devuelve401()
+        {
+            _authServiceMock
+                .Setup(s => s.ResetPasswordAsync("token-expirado", "NuevoPass123"))
+                .ThrowsAsync(new TokenResetExpiradoException());
+
+            var response = await _client.PostAsJsonAsync("/api/auth/reset-password",
+                new { token = "token-expirado", nuevaPassword = "NuevoPass123" });
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }

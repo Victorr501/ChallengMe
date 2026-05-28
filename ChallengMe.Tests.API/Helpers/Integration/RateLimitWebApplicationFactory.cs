@@ -1,17 +1,12 @@
 ﻿using ChallengMe.Services.AuthService;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using System.Threading.RateLimiting;
-using Microsoft.Extensions.Configuration;
 
 namespace ChallengMe.Tests.API.Helpers
 {
-    public class CustomWebApplicationFactory : WebApplicationFactory<Program>
+    public class RateLimitWebApplicationFactory : WebApplicationFactory<Program>
     {
         public Mock<IAuthService> AuthServiceMock { get; } = new();
 
@@ -24,14 +19,6 @@ namespace ChallengMe.Tests.API.Helpers
                 if (descriptor != null)
                     services.Remove(descriptor);
                 services.AddScoped<IAuthService>(_ => AuthServiceMock.Object);
-            });
-
-            builder.ConfigureAppConfiguration(config =>
-            {
-                config.AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["DisableRateLimiting"] = "true"
-                });
             });
 
             builder.UseEnvironment("Development");

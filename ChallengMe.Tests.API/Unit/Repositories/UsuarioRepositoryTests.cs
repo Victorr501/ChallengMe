@@ -180,5 +180,32 @@ namespace ChallengMe.Tests.API.Unit.Repositories
             actualizado.RachaActual.Should().Be(5);
             actualizado.RachaMaxima.Should().Be(10);
         }
+
+        [Fact]
+        public async Task ActualizarPasswordAsync_SoloActualizaPasswordHash_NoCambiaOtrosCampos()
+        {
+            var usuario = CrearUsuarioPrueba(nombreUsuario: "UsuarioOriginal", passwordHash: "hash_viejo");
+            await _sut.CrearAsync(usuario);
+
+
+            await _sut.ActualizarPasswordAsync(usuario.Id, "hash_nuevo");
+
+            var actualizado = await _sut.ObtenerPorIdAsync(usuario.Id);
+            actualizado!.PasswordHash.Should().Be("hash_nuevo");
+
+            actualizado.NombreUsuario.Should().Be("UsuarioOriginal");
+            actualizado.Email.Should().Be(usuario.Email);
+            actualizado.ProveedorAutenticacion.Should().Be(usuario.ProveedorAutenticacion);
+        }
+
+        [Fact]
+        public async Task ActualizarAsync_UsuarioInexistente_NoLanzaExcepcion()
+        {
+            var usuarioFantasma = CrearUsuarioPrueba(email: "fantasma@test.com");
+            usuarioFantasma.NombreUsuario = "NombreQueNadieTiene";
+
+            await _sut.Invoking(r => r.ActualizarAsync(usuarioFantasma))
+                      .Should().NotThrowAsync();
+        }
     }
 }

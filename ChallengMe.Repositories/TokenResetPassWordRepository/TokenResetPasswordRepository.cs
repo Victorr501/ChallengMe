@@ -58,11 +58,10 @@ namespace ChallengMe.Repositories.TokenResetPasswordRepository
             using var connection = _dbConnectionFactory.CrearConexion();
             const string sql = """
                 DELETE FROM TokensResetPassword
-                WHERE Expiracion < GETUTCDATE()
+                WHERE Expiracion < @Ahora
                 OR Usado = 1
                 """;
-            _logger.LogInformation("Eliminando tokens expirados y usados");
-            await connection.ExecuteAsync(sql);
+            await connection.ExecuteAsync(sql, new { Ahora = DateTime.UtcNow }); // ← parámetro en vez de función SQL
         }
     }
 }
