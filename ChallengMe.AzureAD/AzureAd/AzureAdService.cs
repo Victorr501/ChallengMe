@@ -24,14 +24,20 @@ namespace ChallengMe.AzureAD.AzureAd
             _http = http;
         }
 
-        public async Task<string?> ValidarTokenYObtenerEmailAsync(string tokenMicrosoft)
+        public async Task<string?> ValidarTokenYObtenerEmailAsync(string tokenMicrosoft, string plataforma)
         {
             var tenantId = _config["AzureAd:TenantId"];
             var clientId = _config["AzureAd:ClientId"];
             var clientSecret = _config["AzureAd:ClientSecret"];
-            var redirectUri = _config["AzureAd:RedirectUri"];
+            var redirectUri = _config[$"AzureAd:RedirectUris:{plataforma}"];
 
-            _logger.LogInformation("Intercambiando authorization code por token");
+            if (string.IsNullOrWhiteSpace(redirectUri))
+            {
+                _logger.LogCritical("Plataforma no reconocida o RedirectUri no configurada: {Plataforma}", plataforma);
+                return null;
+            }
+
+            _logger.LogInformation("Intercambiando authorization code por token. Plataforma: {Plataforma}", plataforma);
 
             var tokenEndpoint = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
 

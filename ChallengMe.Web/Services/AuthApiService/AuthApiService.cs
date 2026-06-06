@@ -6,10 +6,13 @@ namespace ChallengMe.Web.Services
     public class AuthApiService
     {
         private readonly HttpClient _http;
+        private readonly string _plataforma;
 
-        public AuthApiService(HttpClient http)
+        public AuthApiService(HttpClient http, IConfiguration config)
         {
             _http = http;
+            var baseUrl = config["ApiBaseUrl"] ?? "";
+            _plataforma = baseUrl.Contains("localhost") ? "local" : "web";
         }
 
         public async Task<AuthShipment?> LoginEmailAsync(string email, string password)
@@ -50,7 +53,11 @@ namespace ChallengMe.Web.Services
         {
             var response = await _http.PostAsJsonAsync(
                 "/api/auth/login-microsoft",
-                new AuthMicrosoftShipment { Code = code });
+                new AuthMicrosoftShipment 
+                { 
+                    Code = code,
+                    Plataforma = _plataforma
+                });
 
             if (!response.IsSuccessStatusCode)
                 return null;

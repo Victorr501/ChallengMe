@@ -27,7 +27,7 @@ namespace ChallengMe.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> LoginMicrosoft([FromBody] TokenMicrosoftRequest request)
         {
-            var token = await _authService.LogingMicrosoftAsync(request.Code);
+            var token = await _authService.LogingMicrosoftAsync(request.Code, request.Plataforma);
             return Ok(new AuthResponse { Token = token });
         }
 

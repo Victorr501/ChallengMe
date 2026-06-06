@@ -8,6 +8,6 @@ namespace ChallengMe.AzureAD.AzureAd
 {
     public interface IAzureAdService
     {
-        Task<string> ValidarTokenYObtenerEmailAsync(string tokenMicrosoft);
+        Task<string> ValidarTokenYObtenerEmailAsync(string tokenMicrosoft, string plataforma);
     }
 }

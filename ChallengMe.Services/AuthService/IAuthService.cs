@@ -8,7 +8,7 @@ namespace ChallengMe.Services.AuthService
 {
     public interface IAuthService
     {
-        Task<String> LogingMicrosoftAsync(string tokenMicrosoft);
+        Task<string> LogingMicrosoftAsync(string tokenMicrosoft, string plataforma);
         Task<String> RegistroEmailAsync(string email, string password, string nombreUsuario);
         Task<String> LoginEmailAsync(string email, string password);
         Task SolicitarResetPasswordAsync(string email);

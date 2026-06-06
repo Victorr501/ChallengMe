@@ -9,5 +9,6 @@ namespace ChallengMe.Models.Auth.DTOs
     public class TokenMicrosoftRequest
     {
         public string Code { get; set; }
+        public string Plataforma { get; set; } = string.Empty;
     }
 }

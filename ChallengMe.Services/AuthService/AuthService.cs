@@ -31,11 +31,11 @@ namespace ChallengMe.Services.AuthService
             _logger = logger;
         }
 
-        public async Task<String> LogingMicrosoftAsync(string tokenMicrosoft)
+        public async Task<String> LogingMicrosoftAsync(string tokenMicrosoft, string plataforma)
         {
             try
             {
-                var email = await _azureAdService.ValidarTokenYObtenerEmailAsync(tokenMicrosoft);
+                var email = await _azureAdService.ValidarTokenYObtenerEmailAsync(tokenMicrosoft, plataforma);
                 if (email is null)
                 {
                     _logger.LogWarning("Token de Microsoft invalido");
@@ -144,9 +144,6 @@ namespace ChallengMe.Services.AuthService
                 throw new CredencialesInvalidasException();
             }
 
-
-            
-                
 
             var passwordCorrecta = BCrypt.Net.BCrypt.Verify(password, usuario.PasswordHash);
             if (!passwordCorrecta)
