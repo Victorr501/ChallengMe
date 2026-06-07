@@ -39,7 +39,7 @@ namespace ChallengMe.AzureAD.AzureAd
 
             _logger.LogInformation("Intercambiando authorization code por token. Plataforma: {Plataforma}", plataforma);
 
-            var tokenEndpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
+            var tokenEndpoint = $"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token";
 
             var formData = new Dictionary<string, string>
             {
@@ -76,7 +76,7 @@ namespace ChallengMe.AzureAD.AzureAd
 
             try
             {
-                var metadataUrl = "https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration";
+                var metadataUrl = $"https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration";
                 var configManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                     metadataUrl,
                     new OpenIdConnectConfigurationRetriever());
@@ -91,8 +91,7 @@ namespace ChallengMe.AzureAD.AzureAd
                     ValidIssuers = new[]
                     {
                         $"https://login.microsoftonline.com/{tenantId}/v2.0",
-                        $"https://sts.windows.net/{tenantId}/",
-                        "https://login.microsoftonline.com/9188040d-6c67-4c5b-b112-36a304b66dad/v2.0"
+                        $"https://sts.windows.net/{tenantId}/"
                     },
                     ValidateAudience = true,
                     ValidAudience = clientId,
